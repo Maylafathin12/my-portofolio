@@ -236,11 +236,11 @@ const Card = React.forwardRef(({ project }, ref) => {
           )}
         </div>
 
-        <div className="pc-right">
+        {/* <div className="pc-right">
           <div className="pc-ring-outer" style={{ borderColor: `${project.glow}20` }}>
             <div className="pc-ring-inner" style={{ borderColor: `${project.glow}0e` }} />
           </div>
-        </div>
+        </div> */}
       </div>
 
       <div className="pc-bottom-rule" style={{ background: `linear-gradient(90deg,transparent,${project.glow}28,transparent)` }} />
@@ -402,8 +402,8 @@ const Projects = () => {
         .pc-badge { font-family: 'DM Sans', sans-serif; font-size: 8px; letter-spacing: 0.2em; color: #f9b8d4; border: 1px solid rgba(249,184,212,0.3); padding: 3px 8px; border-radius: 4px; background: rgba(249,184,212,0.05); }
         .pc-yr { font-family: 'DM Sans', sans-serif; font-size: 11px; color: rgba(255,255,255,0.3); letter-spacing: 0.05em; }
 
-        .pc-body { flex: 1; display: grid; grid-template-columns: 1.2fr 1fr; gap: 2rem; z-index: 2; position: relative; }
-        .pc-left { display: flex; flex-direction: column; position: relative; }
+        // .pc-body { flex: 1; display: grid; grid-template-columns: 1.2fr 1fr; gap: 2rem; z-index: 2; position: relative; }
+        // .pc-left { display: flex; flex-direction: column; position: relative; }
         .pc-bgnumber { position: absolute; left: -1rem; top: -1.5rem; font-family: 'Clash Display', sans-serif; font-size: 180px; font-weight: 700; opacity: 0.1; line-height: 1; z-index: -1; pointer-events: none; }
         .pc-role { font-family: 'DM Sans', sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.25em; color: rgba(255,255,255,0.6); margin-bottom: 0.8rem; }
         .pc-title { font-family: 'Clash Display', sans-serif; font-size: clamp(24px, 3.5vw, 44px); font-weight: 700; color: #fff; margin: 0 0 1.2rem; letter-spacing: -0.01em; }
