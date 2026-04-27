@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: auto !important;
+}
+
+body {
+  overflow-y: scroll !important;
+  overflow-x: hidden;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  background: #0d0a14;
+  color: #ffffff;
+}
+
+body {
+  overflow-x: hidden;
+}
