@@ -4,18 +4,15 @@ import gsap from 'gsap'
 const experiences = [
   {
     id: 0,
-    year: '2026',
+    year: '2025',
     title: 'Front-End Developer Intern',
     company: 'Educativa.id',
-    period: 'Jan 2026 – Present',
-    color: '#2d1a5e',   // deep purple
-    glow: '#e8c8ff',    // lavender
+    period: 'Nov 2025 – Present',
+    color: '#2d1a5e',
+    glow: '#e8c8ff',
     ring: true,
     bullets: [
-      'Built global.educativa.id with React.js',
-      'Revamped KelasRiset.com landing page',
-      'Awarded Best Mentor – UI/UX & Front-End',
-      'Awarded Most Growth Mindset',
+      'As a Front-End Intern, I engineered the global.educativa.id platform from scratch—slashing the production timeline by 66%. I also spearheaded the KelasRiset visual overhaul, earning "Best Mentor" and "Most Growth Mindset" awards for my technical excellence and proactive contributions.',
     ],
   },
   {
@@ -23,14 +20,12 @@ const experiences = [
     year: '2025',
     title: 'Growth Engineer Intern',
     company: 'Dicoding Indonesia',
-    period: '2025',
-    color: '#3d1a3a',   // deep rose-purple
-    glow: '#f9b8d4',    // rose pink
+    period: 'April - June 2025',
+    color: '#3d1a3a',
+    glow: '#f9b8d4',
     ring: false,
     bullets: [
-      'Growth experiments for user activation',
-      'Cross-functional Agile collaboration',
-      'Engagement metric optimization',
+      'As a Growth Engineer Intern, I launched the Dicoding DevCommunity Support 2025, a nationwide program to scale Indonesian tech communities. I successfully architected the collaboration framework and managed a growing network of 200+ active members.',
     ],
   },
   {
@@ -38,14 +33,12 @@ const experiences = [
     year: '2024',
     title: 'Front-End Developer Intern',
     company: 'DINKOMINFO Blora',
-    period: '2024',
-    color: '#1a1040',   // dark indigo
-    glow: '#c8b4ff',    // soft purple
+    period: 'Oct - Nov 2024',
+    color: '#1a1040',
+    glow: '#c8b4ff',
     ring: true,
     bullets: [
-      'Built Command Center Website Kab. Blora',
-      'Real-time government operations dashboard',
-      'Responsive layouts from Figma specs',
+      'As a Front-End Intern, I built the official Command Center Kabupaten Blora, a real-time operations dashboard for government officials. I focused on translating complex data into high-performance, responsive layouts for daily regional monitoring.',
     ],
   },
   {
@@ -54,13 +47,11 @@ const experiences = [
     title: 'CTO & Lead Developer',
     company: 'SAHAL – P2MW',
     period: 'Feb – Sep 2024',
-    color: '#3a1569',   // purple-violet
-    glow: '#d4b8ff',    // violet lavender
+    color: '#3a1569',
+    glow: '#d4b8ff',
     ring: true,
     bullets: [
-      'Led multi-developer team as CTO',
-      'Drove full platform architecture',
-      'Improved delivery speed and feature quality',
+      'Serving as CTO and Lead Developer, I acted as the sole technical decision-maker and architect for the entire platform. I directed the end-to-end development and system integration that successfully supported over 500 active students.',
     ],
   },
   {
@@ -69,8 +60,8 @@ const experiences = [
     title: 'Teaching Assistant',
     company: 'STQA – UMY',
     period: '2024',
-    color: '#4e1235',   // darkest purple
-    glow: '#f0d4ff',    // lightest lavender
+    color: '#4e1235',
+    glow: '#f0d4ff',
     ring: false,
     bullets: [
       'Delivered STQA coursework to undergrads',
@@ -79,8 +70,15 @@ const experiences = [
   },
 ]
 
-const SIZE = 280
 const N = experiences.length
+
+// Responsive SIZE based on viewport
+const getSize = () => {
+  if (typeof window === 'undefined') return 260
+  if (window.innerWidth < 480) return 180
+  if (window.innerWidth < 768) return 220
+  return 260
+}
 
 const Experience = () => {
   const wrapperRef = useRef(null)
@@ -88,8 +86,15 @@ const Experience = () => {
   const ringRefs = useRef([])
   const orbitRefs = useRef([])
   const [activeIdx, setActiveIdx] = useState(0)
+  const [SIZE, setSIZE] = useState(getSize)
   const activeIdxRef = useRef(0)
-  const isAnimatingRef = useRef(false)
+
+  // Update SIZE on resize
+  useEffect(() => {
+    const onResize = () => setSIZE(getSize())
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   // ── Starfield ──────────────────────────────────────────────
   useEffect(() => {
@@ -139,14 +144,12 @@ const Experience = () => {
   }, [])
 
   // ── STICKY SCROLL DRIVER ──────────────────────────────────
-  // Wrapper = N × 100vh tall. Sticky inner pins at top:0.
-  // Native scroll drives planet index — zero wheel interception.
   useEffect(() => {
     const onScroll = () => {
       const wrapper = wrapperRef.current
       if (!wrapper) return
       const wTop = wrapper.getBoundingClientRect().top
-      const scrolledInside = -wTop // px scrolled past wrapper top
+      const scrolledInside = -wTop
       const next = Math.min(N - 1, Math.max(0, Math.round(scrolledInside / window.innerHeight)))
       if (next === activeIdxRef.current) return
       const prev = activeIdxRef.current
@@ -193,10 +196,7 @@ const Experience = () => {
   const current = experiences[activeIdx]
 
   return (
-    // ── OUTER WRAPPER: provides scroll fuel (N × 100vh) ──
     <div ref={wrapperRef} style={{ height: `${N * 100}vh`, position: 'relative' }}>
-
-      {/* ── STICKY PANEL ── */}
       <div style={{ position: 'sticky', top: 0, height: '100vh', background: '#030206', overflow: 'hidden' }}>
 
         <canvas ref={bgCanvasRef} style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }} />
@@ -206,15 +206,14 @@ const Experience = () => {
         <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', background: `radial-gradient(ellipse 50% 40% at 50% 85%, ${current.glow}08 0%, transparent 70%)`, transition: 'background 1.1s ease' }} />
 
         {/* Header */}
-        <div style={{ position: 'absolute', top: '5vh', left: '6vw', zIndex: 10 }}>
-          <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 9, letterSpacing: '0.4em', textTransform: 'uppercase', color: 'rgba(232,200,255,0.8)', margin: '0 0 0.3rem' }}>✦ The Professional Odyssey</p>
-          <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(12px, 1.4vw, 17px)', fontStyle: 'italic', color: 'rgba(255,255,255,0.7)', margin: 0 }}>A timeline of building products, leading teams, and scaling international platforms.</p>
-          {/* <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(12px, 1.4vw, 17px)', fontStyle: 'italic', color: 'rgba(255,255,255,0.1)', margin: 0 }}>fly through my journey</p> */}
+        <div className="xp-header">
+          <p className="xp-eyebrow">✦ The Professional Odyssey</p>
+          <p className="xp-subtitle">A timeline of building products, leading teams, and scaling international platforms.</p>
         </div>
 
         {/* Counter */}
-        <div style={{ position: 'absolute', top: '5vh', right: '6vw', zIndex: 10, textAlign: 'right' }}>
-          <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(28px, 4vw, 52px)', fontStyle: 'italic', color: 'rgba(255,255,255,0.06)', margin: 0, lineHeight: 1 }}>
+        <div className="xp-counter">
+          <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(24px, 4vw, 52px)', fontStyle: 'italic', color: 'rgba(255,255,255,0.06)', margin: 0, lineHeight: 1 }}>
             {String(activeIdx + 1).padStart(2, '0')}
             <span style={{ fontSize: '0.45em', opacity: 0.5 }}> / {String(N).padStart(2, '0')}</span>
           </p>
@@ -276,19 +275,19 @@ const Experience = () => {
                       <div style={{ position: 'absolute', width: SIZE * 1.45, height: SIZE * 0.18, border: `1px solid ${exp.glow}12`, borderRadius: '50%', pointerEvents: 'none', transform: 'rotateX(74deg)' }} />
                     </>
                   )}
-                  <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', pointerEvents: 'none', padding: '0 1.5rem' }}>
-                    <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(13px, 1.6vw, 18px)', fontStyle: 'italic', color: exp.glow, opacity: 0.6, margin: '0 0 6px', letterSpacing: '0.1em' }}>{exp.year}</p>
-                    <p style={{ fontFamily: 'Clash Display, sans-serif', fontSize: 'clamp(13px, 1.4vw, 17px)', fontWeight: 700, color: '#fff', opacity: 0.92, margin: 0, letterSpacing: '0.03em', lineHeight: 1.3, maxWidth: SIZE * 0.52, textAlign: 'center' }}>{exp.title}</p>
+                  <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', pointerEvents: 'none', padding: '0 1rem' }}>
+                    <p style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(12px, 1.6vw, 18px)', fontStyle: 'italic', color: exp.glow, opacity: 0.6, margin: '0 0 6px', letterSpacing: '0.1em' }}>{exp.year}</p>
+                    <p style={{ fontFamily: 'Clash Display, sans-serif', fontSize: 'clamp(11px, 1.4vw, 17px)', fontWeight: 700, color: '#fff', opacity: 1, margin: 0, letterSpacing: '0.03em', lineHeight: 1.3, maxWidth: SIZE * 0.52, textAlign: 'center' }}>{exp.title}</p>
                   </div>
                 </div>
 
                 {/* Info */}
-                <div id={'xp-info-' + i} style={{ textAlign: 'center', maxWidth: 440, opacity: i === 0 ? 1 : 0, marginTop: `calc(-${SIZE * 0.08}px + 1.2rem)`, padding: '0 1.5rem' }}>
+                <div id={'xp-info-' + i} style={{ textAlign: 'center', maxWidth: 'min(440px, 88vw)', opacity: i === 0 ? 1 : 0, marginTop: `calc(-${SIZE * 0.08}px + 1.2rem)`, padding: '0 1.5rem' }}>
                   <div style={{ width: 40, height: 1, background: `linear-gradient(90deg, transparent, ${exp.glow}40, transparent)`, margin: '0 auto 0.85rem' }} />
-                  <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: exp.glow, opacity: 0.45, margin: '0 0 0.75rem' }}>{exp.period}</p>
+                  <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: exp.glow, opacity: 0.8, margin: '0 0 0.75rem' }}>{exp.period}</p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
                     {exp.bullets.map((b, bi) => (
-                      <p key={bi} style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 'clamp(11.5px, 1vw, 13.5px)', color: 'rgba(255,255,255,0.38)', margin: 0, lineHeight: 1.7 }}>{b}</p>
+                      <p key={bi} style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 'clamp(11px, 1vw, 13.5px)', color: 'rgba(255,255,255,0.8)', margin: 0, lineHeight: 1.7 }}>{b}</p>
                     ))}
                   </div>
                 </div>
@@ -298,33 +297,118 @@ const Experience = () => {
         </div>
 
         {/* Side progress (left) */}
-        <div style={{ position: 'absolute', left: '3.5vw', top: '50%', transform: 'translateY(-50%)', display: 'flex', flexDirection: 'column', gap: '0.55rem', zIndex: 10 }}>
+        <div className="xp-side-progress">
           {experiences.map((_, i) => (
             <div key={i} onClick={() => scrollToSlide(i)} style={{ width: i === activeIdx ? 2 : 1, height: i === activeIdx ? 28 : 12, borderRadius: 999, background: i === activeIdx ? current.glow : 'rgba(255,255,255,0.12)', transition: 'all 0.4s ease', boxShadow: i === activeIdx ? `0 0 8px ${current.glow}60` : 'none', cursor: 'pointer' }} />
           ))}
         </div>
 
         {/* Dot nav (bottom) */}
-        <div style={{ position: 'absolute', bottom: '4.5vh', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '0.6rem', zIndex: 10, alignItems: 'center' }}>
+        <div className="xp-dot-nav">
           {experiences.map((_, i) => (
             <div key={i} onClick={() => scrollToSlide(i)} style={{ width: i === activeIdx ? 24 : 5, height: 5, borderRadius: 999, background: i === activeIdx ? current.glow : 'rgba(255,255,255,0.13)', transition: 'all 0.4s cubic-bezier(.4,0,.2,1)', boxShadow: i === activeIdx ? `0 0 10px ${current.glow}50` : 'none', cursor: 'pointer' }} />
           ))}
         </div>
 
         {/* Scroll hint */}
-        <div style={{ position: 'absolute', bottom: '4.5vh', right: '6vw', zIndex: 10, display: 'flex', alignItems: 'center', gap: 8, opacity: 0.18 }}>
+        <div className="xp-scroll-hint">
           <span style={{ fontFamily: 'DM Sans', fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#fff' }}>{activeIdx < N - 1 ? 'scroll' : 'continue'}</span>
           <div style={{ width: 24, height: 1, background: 'rgba(232,200,255,0.5)' }} />
         </div>
 
-        {/* Company label (right) */}
-        <div style={{ position: 'absolute', right: '5.5vw', top: '50%', transform: 'translateY(-50%) rotate(90deg)', zIndex: 10, transformOrigin: 'center center', whiteSpace: 'nowrap' }}>
-          <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 9, letterSpacing: '0.3em', textTransform: 'uppercase', color: current.glow, opacity: 0.28, margin: 0, transition: 'color 0.8s ease' }}>{current.company}</p>
+        {/* Company label (right) — hidden on small screens */}
+        <div className="xp-company-label">
+          <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 9, letterSpacing: '0.3em', textTransform: 'uppercase', color: current.glow, opacity: 0.5, margin: 0, transition: 'color 0.8s ease' }}>{current.company}</p>
         </div>
 
         <style>{`
           @keyframes pulseGlow { 0%,100%{opacity:.6;transform:scale(1)} 50%{opacity:1;transform:scale(1.08)} }
           @keyframes ripple1 { 0%{transform:scale(.85);opacity:.5} 100%{transform:scale(1.15);opacity:0} }
+
+          .xp-header {
+            position: absolute;
+            top: clamp(3vh, 5vh, 7vh);
+            left: clamp(4vw, 6vw, 8vw);
+            right: clamp(4vw, 6vw, 8vw);
+            z-index: 10;
+            max-width: 560px;
+          }
+          .xp-eyebrow {
+            font-family: 'DM Sans', sans-serif;
+            font-size: clamp(8px, 0.9vw, 9px);
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: rgba(232,200,255,0.8);
+            margin: 0 0 0.3rem;
+          }
+          .xp-subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(11px, 1.4vw, 17px);
+            font-style: italic;
+            color: rgba(255,255,255,0.7);
+            margin: 0;
+          }
+
+          .xp-counter {
+            position: absolute;
+            top: clamp(3vh, 5vh, 7vh);
+            right: clamp(4vw, 6vw, 8vw);
+            z-index: 10;
+            text-align: right;
+          }
+
+          .xp-side-progress {
+            position: absolute;
+            left: clamp(1.5vw, 3.5vw, 5vw);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+            z-index: 10;
+          }
+
+          .xp-dot-nav {
+            position: absolute;
+            bottom: clamp(3vh, 4.5vh, 6vh);
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.6rem;
+            z-index: 10;
+            align-items: center;
+          }
+
+          .xp-scroll-hint {
+            position: absolute;
+            bottom: clamp(3vh, 4.5vh, 6vh);
+            right: clamp(4vw, 6vw, 8vw);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.18;
+          }
+
+          .xp-company-label {
+            position: absolute;
+            right: clamp(4vw, 5.5vw, 7vw);
+            top: 50%;
+            transform: translateY(-50%) rotate(90deg);
+            z-index: 10;
+            transform-origin: center center;
+            white-space: nowrap;
+          }
+
+          @media (max-width: 480px) {
+            .xp-company-label { display: none; }
+            .xp-scroll-hint { display: none; }
+            .xp-side-progress { left: 1vw; }
+          }
+
+          @media (max-width: 767px) {
+            .xp-subtitle { display: none; }
+          }
         `}</style>
       </div>
     </div>

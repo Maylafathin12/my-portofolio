@@ -5,7 +5,7 @@ import { useIsMobile } from '../../hooks/useIsMobile'
 
 const contacts = [
   { label: 'Email', value: 'maylafaat@gmail.com', href: 'mailto:maylafaat@gmail.com', icon: '✉', desc: 'Drop a message' },
-  { label: 'LinkedIn', value: 'maylafathinnadhifaulya', href: 'https://linkedin.com/in/maylafathinnadhifaulya', icon: '↗', desc: 'Let\'s connect professionally' },
+  { label: 'LinkedIn', value: 'maylafathinnadhifaulya', href: 'https://linkedin.com/in/maylafathinnadhifaulya', icon: '↗', desc: "Let's connect professionally" },
   { label: 'GitHub', value: 'Maylafathin12', href: 'https://github.com/Maylafathin12', icon: '↗', desc: 'See my code' },
   { label: 'Phone', value: '+62 882-0086-99254', href: 'tel:+6288200869254', icon: '✆', desc: 'Call or WhatsApp' },
 ]
@@ -23,7 +23,6 @@ const Contact = () => {
   const [visible, setVisible] = useState(false)
   const mousePos = useRef({ x: 0, y: 0 })
   const cursorPos = useRef({ x: 0, y: 0 })
-  const rafRef = useRef(null)
   const threeRef = useRef({})
   const isMobile = useIsMobile(768)
 
@@ -38,14 +37,13 @@ const Contact = () => {
       antialias: false,
       powerPreference: 'high-performance',
     })
-    renderer.setPixelRatio(window.devicePixelRatio)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.setSize(canvas.clientWidth, canvas.clientHeight)
 
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 100)
     camera.position.z = 5
 
-    // Particles — subtle starfield, not bokeh explosion
     const N = 900
     const positions = new Float32Array(N * 3)
     const colors = new Float32Array(N * 3)
@@ -122,17 +120,13 @@ const Contact = () => {
 
     const gridGeo = new THREE.BufferGeometry()
     const gridVerts = []
-    for (let x = -9; x <= 9; x += 3) {
-      gridVerts.push(x, -6, -2, x, 6, -2)
-    }
-    for (let y = -6; y <= 6; y += 3) {
-      gridVerts.push(-9, y, -2, 9, y, -2)
-    }
+    for (let x = -9; x <= 9; x += 3) { gridVerts.push(x, -6, -2, x, 6, -2) }
+    for (let y = -6; y <= 6; y += 3) { gridVerts.push(-9, y, -2, 9, y, -2) }
     gridGeo.setAttribute('position', new THREE.Float32BufferAttribute(gridVerts, 3))
     const gridMat = new THREE.LineBasicMaterial({ color: '#0d0818', transparent: true, opacity: 0.2 })
     scene.add(new THREE.LineSegments(gridGeo, gridMat))
 
-    threeRef.current = { renderer, scene, camera, mat, points, positions, speeds, N }
+    threeRef.current = { renderer, scene, camera, mat, geo, positions, speeds, N }
 
     const resize = () => {
       const w = canvas.clientWidth, h = canvas.clientHeight
@@ -176,10 +170,9 @@ const Contact = () => {
 
   // ── Mouse tracking for Three.js + custom cursor ──────────────────────────
   useEffect(() => {
+    if (isMobile) return
     const onMove = (e) => {
-      if (isMobile) return
       mousePos.current = { x: e.clientX, y: e.clientY }
-      // NDC for Three.js
       if (threeRef.current.mat) {
         threeRef.current.mat.uniforms.uMouse.value.set(
           (e.clientX / window.innerWidth) * 2 - 1,
@@ -189,9 +182,8 @@ const Contact = () => {
     }
     window.addEventListener('mousemove', onMove)
 
-    // Custom cursor lerp loop
+    let rafId
     const cursorLoop = () => {
-      if (isMobile) return
       cursorPos.current.x += (mousePos.current.x - cursorPos.current.x) * 0.12
       cursorPos.current.y += (mousePos.current.y - cursorPos.current.y) * 0.12
       if (cursorRef.current) {
@@ -200,11 +192,14 @@ const Contact = () => {
       if (cursorDotRef.current) {
         cursorDotRef.current.style.transform = `translate(${mousePos.current.x - 3}px, ${mousePos.current.y - 3}px)`
       }
-      requestAnimationFrame(cursorLoop)
+      rafId = requestAnimationFrame(cursorLoop)
     }
     cursorLoop()
 
-    return () => window.removeEventListener('mousemove', onMove)
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      cancelAnimationFrame(rafId)
+    }
   }, [isMobile])
 
   // ── Intersection + split-char reveal ─────────────────────────────────────
@@ -212,11 +207,8 @@ const Contact = () => {
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
       setVisible(entry.isIntersecting)
-
       if (entry.isIntersecting && !hasRevealed) {
         setHasRevealed(true)
-
-        // stagger each char
         charsRef.current.forEach((el, i) => {
           if (!el) return
           gsap.fromTo(el,
@@ -224,7 +216,6 @@ const Contact = () => {
             { opacity: 1, y: 0, rotateX: 0, filter: 'blur(0px)', duration: 1, ease: 'expo.out', delay: 0.1 + i * 0.04 }
           )
         })
-
         itemRefs.current.forEach((el, i) => {
           if (!el) return
           gsap.fromTo(el,
@@ -250,27 +241,24 @@ const Contact = () => {
     const rx = ((e.clientY - cy) / rect.height) * -14
     const ry = ((e.clientX - cx) / rect.width) * 14
     gsap.to(el, { x: dx, y: dy, rotateX: rx, rotateY: ry, duration: 0.4, ease: 'power2.out' })
-    // shimmer position via CSS var
     const px = ((e.clientX - rect.left) / rect.width) * 100
     const py = ((e.clientY - rect.top) / rect.height) * 100
     el.style.setProperty('--mx', `${px}%`)
     el.style.setProperty('--my', `${py}%`)
-  }, [])
+  }, [isMobile])
 
   const handleMouseLeave = useCallback((i) => {
     gsap.to(itemRefs.current[i], { x: 0, y: 0, rotateX: 0, rotateY: 0, duration: 0.8, ease: 'elastic.out(1, 0.4)' })
     setHoveredIdx(null)
   }, [])
 
-  // Title strings for split char
-  const lines = ['LET\'S BUILD', 'SOMETHING', 'THAT\'S', 'WORTH', 'SHOWING', 'OFF']
+  const lines = ["LET'S BUILD", 'SOMETHING', "THAT'S", 'WORTH', 'SHOWING', 'OFF']
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:ital,wght@1,300;1,400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:ital,wght@1,300;1,400;1,500;1,600&display=swap');
 
-        * { box-sizing: border-box; }
         ${!isMobile ? 'body { cursor: none !important; }' : ''}
 
         .contact-section {
@@ -280,7 +268,7 @@ const Contact = () => {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          padding: 10vh 6vw;
+          padding: clamp(6vh, 10vh, 12vh) clamp(4vw, 6vw, 8vw);
           position: relative;
           overflow: hidden;
           perspective: 1000px;
@@ -389,9 +377,10 @@ const Contact = () => {
         /* ── TITLE CHARS ── */
         .title-wrap {
           text-align: center;
-          margin-bottom: 5rem;
+          margin-bottom: clamp(3rem, 5rem, 6rem);
           position: relative;
           z-index: 2;
+          width: 100%;
         }
         .title-line {
           display: block;
@@ -402,27 +391,24 @@ const Contact = () => {
           display: inline-block;
           opacity: 0;
           font-family: 'Clash Display', 'Arial Black', sans-serif;
-          font-size: clamp(48px, 8vw, 108px);
+          font-size: clamp(32px, 8vw, 108px);
           font-weight: 700;
           letter-spacing: -0.03em;
           transform-origin: bottom center;
           will-change: transform, opacity;
         }
-        .title-char.gradient {
-          background: linear-gradient(120deg, #e8c8ff 0%, #f9b8d4 50%, #c8b4ff 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-        .title-char.white { color: #fff; }
 
         .subtitle-italic {
           font-family: 'Cormorant Garamond', Georgia, serif;
           font-style: italic;
-          font-size: clamp(14px, 1.6vw, 19px);
+          font-weight: 600;
+          font-size: clamp(16px, 2vw, 21px);
           color: rgba(255,255,255,0.8);
           margin: 1.2rem 0 0;
           letter-spacing: 0.02em;
+          max-width: min(560px, 90vw);
+          margin-left: auto;
+          margin-right: auto;
         }
 
         /* ── NUMBER DECORATION ── */
@@ -434,6 +420,7 @@ const Contact = () => {
           margin-right: auto;
           padding-right: 1rem;
           min-width: 28px;
+          flex-shrink: 0;
         }
 
         /* ── CARDS ── */
@@ -442,7 +429,7 @@ const Contact = () => {
           flex-direction: column;
           gap: 0.9rem;
           width: 100%;
-          max-width: 640px;
+          max-width: min(640px, 92vw);
           position: relative;
           z-index: 2;
         }
@@ -450,7 +437,7 @@ const Contact = () => {
         .contact-card {
           display: flex;
           align-items: center;
-          padding: 1.4rem 1.8rem;
+          padding: clamp(1rem, 1.4rem, 1.8rem) clamp(1.2rem, 1.8rem, 2rem);
           border-radius: 18px;
           background: rgba(255,255,255,0.018);
           border: 1px solid rgba(232,200,255,0.07);
@@ -468,6 +455,10 @@ const Contact = () => {
           --my: 50%;
         }
 
+        @media (hover: none) {
+          .contact-card { cursor: pointer; }
+        }
+
         .contact-card::before {
           content: '';
           position: absolute;
@@ -478,15 +469,12 @@ const Contact = () => {
           border-radius: inherit;
           pointer-events: none;
         }
-
         .contact-card:hover::before { opacity: 1; }
-
         .contact-card:hover {
           background: rgba(232,200,255,0.045);
           border-color: rgba(232,200,255,0.2);
         }
 
-        /* left line accent */
         .contact-card::after {
           content: '';
           position: absolute;
@@ -499,7 +487,7 @@ const Contact = () => {
         }
         .contact-card:hover::after { opacity: 1; }
 
-        .card-meta { flex: 1; }
+        .card-meta { flex: 1; min-width: 0; }
 
         .card-label {
           font-family: 'DM Sans', sans-serif;
@@ -512,12 +500,15 @@ const Contact = () => {
 
         .card-value {
           font-family: 'Clash Display', 'Arial Black', sans-serif;
-          font-size: clamp(14px, 1.9vw, 20px);
+          font-size: clamp(12px, 1.9vw, 20px);
           font-weight: 600;
           color: rgba(255,255,255,0.65);
           margin: 0 0 2px;
           letter-spacing: -0.01em;
           transition: color 0.3s;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         .contact-card:hover .card-value { color: #fff; }
 
@@ -536,6 +527,7 @@ const Contact = () => {
           color: rgba(255,255,255,0.4);
           transition: color 0.3s, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
           margin-left: 1rem;
+          flex-shrink: 0;
         }
         .contact-card:hover .card-icon {
           color: #f9b8d4;
@@ -552,36 +544,45 @@ const Contact = () => {
           position: relative;
           z-index: 2;
           text-transform: uppercase;
+          text-align: center;
         }
 
-        /* horizontal rule deco */
         .deco-line {
           position: relative;
           z-index: 2;
           width: 100%;
-          max-width: 640px;
+          max-width: min(640px, 92vw);
           height: 1px;
           margin-bottom: 2.5rem;
           background: linear-gradient(90deg, transparent, rgba(232,200,255,0.15) 30%, rgba(249,184,212,0.15) 70%, transparent);
         }
 
-        @media (max-width: 600px) {
-          .contact-section { padding: 8vh 5vw; }
-          .title-char { font-size: clamp(36px, 12vw, 60px); }
+        /* ── Mobile tweaks ── */
+        @media (max-width: 480px) {
+          .contact-number { display: none; }
+          .card-value { font-size: clamp(11px, 3.5vw, 15px); }
+        }
+
+        @media (min-width: 1920px) {
+          .contact-section { max-width: 1400px; margin: 0 auto; }
         }
       `}</style>
 
-      {/* Custom Cursor */}
-      <div
-        ref={cursorRef}
-        className={`cursor-ring ${hoveredIdx !== null ? 'hovered' : ''}`}
-        style={{ position: 'fixed', top: 0, left: 0, pointerEvents: 'none', zIndex: 9999 }}
-      >
-        <span ref={cursorTextRef} className="cursor-label">
-          {hoveredIdx !== null ? contacts[hoveredIdx].label.toUpperCase() : ''}
-        </span>
-      </div>
-      <div ref={cursorDotRef} className="cursor-dot" />
+      {/* Custom Cursor — desktop only */}
+      {!isMobile && (
+        <>
+          <div
+            ref={cursorRef}
+            className={`cursor-ring ${hoveredIdx !== null ? 'hovered' : ''}`}
+            style={{ position: 'fixed', top: 0, left: 0, pointerEvents: 'none', zIndex: 9999 }}
+          >
+            <span ref={cursorTextRef} className="cursor-label">
+              {hoveredIdx !== null ? contacts[hoveredIdx].label.toUpperCase() : ''}
+            </span>
+          </div>
+          <div ref={cursorDotRef} className="cursor-dot" />
+        </>
+      )}
 
       <section ref={sectionRef} className="contact-section">
         {/* Three.js canvas */}
@@ -592,30 +593,33 @@ const Contact = () => {
         <div className="vignette" />
         <div className="glow-bottom" />
 
-        {/* Eyebrow */}
-        <div className="title-wrap" style={{ position: 'relative', zIndex: 2 }}>
+        {/* Title */}
+        <div ref={titleRef} className="title-wrap" style={{ position: 'relative', zIndex: 2 }}>
           <p className="eyebrow">Let's Connect</p>
 
-          {/* Split-char title */}
-          {lines.map((line, li) => (
-            <span className="title-line" key={li}>
-              {line.split('').map((ch, ci) => {
-                const globalIdx = lines.slice(0, li).join('').length + ci
-                return (
-                  <span
-                    key={ci}
-                    className={`title-char ${li === 1 ? 'gradient' : 'white'}`}
-                    ref={el => charsRef.current[globalIdx] = el}
-                    style={{ whiteSpace: ch === ' ' ? 'pre' : undefined }}
-                  >
-                    {ch}
-                  </span>
-                )
-              })}
-            </span>
-          ))}
+          {lines.map((line, li) => {
+            const isGradientWord = li === 1 || li === 3
+            return (
+              <span className="title-line group cursor-default" key={li}>
+                {line.split('').map((ch, ci) => {
+                  const globalIdx = lines.slice(0, li).join('').length + ci
+                  return (
+                    <span
+                      key={ci}
+                      className={`title-char ${isGradientWord ? 'bg-gradient-to-br from-[#e8c8ff] via-[#f9b8d4] to-[#c8b4ff] bg-clip-text text-transparent transition-[filter] duration-300 ease-out group-hover:saturate-[1.2]' : 'text-white'}`}
+                      ref={el => charsRef.current[globalIdx] = el}
+                      style={{ whiteSpace: ch === ' ' ? 'pre' : undefined }}
+                    >
+                      {ch}
+                    </span>
+                  )
+                })}
+              </span>
+            )
+          })}
 
-          <p className="subtitle-italic">I'm open to full-time roles and selective freelance projects — particularly in product-focused teams where design and engineering work closely together.
+          <p className="subtitle-italic">
+            I'm open to full-time roles and selective freelance projects — particularly in product-focused teams where design and engineering work closely together.
           </p>
         </div>
 

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useLayoutEffect, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { motion } from 'framer-motion'
 import * as THREE from 'three'
 import { useIsMobile } from '../../hooks/useIsMobile'
 import sehatImg from '../../assets/sehat.png'
@@ -16,13 +15,13 @@ const projects = [
   {
     number: '01',
     title: 'EduResearch AI',
-    role: 'Front-End Developer',
+    role: 'Lead Front-End Developer',
     year: '2026 (June)',
-    desc: 'As the Sole Front-End Engineer, I am crafting the entire visual foundation for an AI-driven research platform specifically for undergraduate students. Currently in development, my focus is on transforming complex AI interactions into a seamless digital experience using React.js and GSAP. I am engineering a modular component architecture and high-performance UI flows—from interactive Title Builders to Methodology Suggesters—ensuring that every step of the thesis journey feels intuitive, responsive, and visually engaging.',
+    desc: 'Building the front-end foundation for an AI-powered research platform — designing the component architecture, AI interaction flows, and structured UX for academic workflows.',
     tags: ['React.js', 'GSAP', 'AI Integration', 'SaaS'],
     link: null,
     isComingSoon: true,
-    glow: '#F3E5F5', 
+    glow: '#F3E5F5', // Ghost Purple (Paling Muda)
     geometry: 'box',
     previewImage: null,
   },
@@ -31,7 +30,7 @@ const projects = [
     title: 'Global Educativa.id',
     role: 'Front-End Developer',
     year: '2026 (Feb - April)',
-    desc: 'As the sole front-end developer in a lean two-person team, I engineered this international platform from scratch in just one month—slashing the original three-month timeline by 66%. Leveraging Three.js, GSAP, and Framer Motion, I architected an immersive interface tailored for professional academic data analysis. I focused on delivering a premium, high-performance experience for global researchers, ensuring that complex data services are accessible through a seamless and visually stunning UI.',
+    desc: 'Production landing page for Global Educativa — an international academic consulting platform. Owned full component architecture, responsive design, and deployment end-to-end using React.js and Tailwind CSS.',
     tags: ['React.js', 'Tailwind CSS', 'Responsive', 'Production'],
     link: 'https://global.educativa.id',
     glow: '#E1BEE7', // Pale Pastel Purple
@@ -43,7 +42,7 @@ const projects = [
     title: 'Kelas Riset by Educativa',
     role: 'Front-End Developer — Revamp',
     year: '2026',
-    desc: 'I spearheaded the visual redesign and front-end overhaul of the KelasRiset landing page to enhance user engagement and modernize its digital presence. By implementing a cleaner, more intuitive layout and refining the component architecture, I successfully elevated the platforms visual appeal, receiving significant positive feedback on the improved user experience. The revamp focused on aligning the UI with Educativa’s professional identity while maintaining high-performance standards for over 6,985+ active members.',
+    desc: 'Rebuilt and redesigned the KelasRiset landing page from the ground up — modernizing the visual identity and delivering a brand-aligned UI now serving 45,000+ members.',
     tags: ['HTML', 'CSS', 'JavaScript', 'UI Revamp'],
     link: 'https://kelasriset.com',
     glow: '#CE93D8', // Soft Lilac
@@ -54,79 +53,73 @@ const projects = [
     number: '04',
     title: 'Command Center Kab. Blora',
     role: 'Front-End Developer · DINKOMINFO',
-    year: '2024 (Oct - Nov)',
+    year: '2024',
     desc: 'Real-time operations dashboard built for DINKOMINFO Kabupaten Blora — actively used by local government officials to monitor regional data daily.',
-    tags: ['PHP', 'LARAVEL', 'Dashboard', 'Government', 'Real-time Data'],
+    tags: ['Dashboard', 'Government', 'Real-time Data'],
     link: null,
     glow: '#B39DDB', // Muted Lavender
     geometry: 'octahedron',
     previewImage: commandImg,
-    noLinkText: 'Proprietary Software',
   },
   {
     number: '05',
     title: 'SAHAL',
     role: 'Web Developer',
-    year: '2024 (Feb - Dec)',
-    desc: 'Serving as the Chief Technology Officer (CTO), I directed the technical strategy and front-end development for SAHAL, an innovative Arabic language learning platform. I oversaw the deployment of a scalable system that successfully acquired and sustained 500+ active students ranging from elementary to high school levels. My focus was on bridging the gap between classical education and modern digital accessibility, ensuring an engaging and seamless learning experience for a diverse age group.',
-    tags: ['WordPress', 'EdTech', '500+ Users', 'SD–SMA'],
+    year: '2024',
+    desc: 'Arabic language learning platform serving 500+ active students from elementary to high school level — built to make classical Arabic accessible and engaging across all age groups.',
+    tags: ['Web', 'EdTech', 'Arabic Learning', '500+ Users', 'SD–SMA'],
     link: null,
     glow: '#9F86C0', // Pastel Deep Lavender
     geometry: 'dodecahedron',
     previewImage: sahalImg,
-    noLinkText: 'Proprietary Software',
   },
   {
     number: '06',
     title: 'SEHAT+ App (Mobile)',
     role: 'Mobile App Developer',
-    year: '2023 (Feb - Dec)',
+    year: '2023',
     desc: 'AI-powered HIV/AIDS awareness mobile app with integrated chatbot for personalized health advice. Built with Kotlin — won 1st Place National at PKP2 PTMA.',
-    tags: ['Flutter', 'DART', 'AI Chatbot', 'Mobile', '🏆 1st Place National'],
+    tags: ['Flutter', 'AI Chatbot', 'Mobile', '🏆 1st Place National'],
     link: null,
     glow: '#6E548E', // Muted Deep Purple
     geometry: 'icosahedron',
     previewImage: sehatImg,
-    noLinkText: 'Internal Enterprise System',
   },
   {
     number: '07',
     title: 'SEHAT+ Landing Page',
     role: 'Web Developer',
-    year: '2023 (Feb - Dec)',
+    year: '2023',
     desc: 'Build landing page website for SEHAT+ providing accessibility and information about the mobile ecosystem.',
     tags: ['HTML5', 'CSS', 'WEBSITE', '🏆 1st Place National'],
     link: null,
     glow: '#6E548E', // Deep Pastel Violet
     geometry: 'icosahedron',
     previewImage: sehatImg,
-    noLinkText: 'Internal Enterprise System',
   },
   {
     number: '08',
     title: 'YUMMY Cafe and Resto',
     role: 'Web Developer',
-    year: '2022 (Dec)',
+    year: '2023',
     desc: 'Interactive restaurant website with integrated web-based booking system. Awarded Most Favorited Web Champion — recognized for UX quality and user engagement.',
-    tags: ['HTML5', 'CSS', 'Booking System', '🏆 Most Favorited Web'],
+    tags: ['Web', 'Booking System', '🏆 Most Favorited Web'],
     link: null,
     glow: '#6E5B9A', // Dusty Purple
     geometry: 'knot',
     previewImage: yumyImg,
-    noLinkText: 'Internal Enterprise System',
   },
   {
     number: '09',
     title: '3Cycle — Recycling Redefined',
     role: 'Mobile App Developer',
-    year: '2022 (Sept - Oct)',
+    year: '2022',
     desc: 'Multiplatform waste management app built with Flutter — featuring real-time geospatial mapping and a gamified points system to encourage sustainable habits.',
     tags: ['Flutter', 'Dart', 'Google Maps API', 'Sustainability'],
     link: null,
     glow: '#42326E', // Dark Muted Purple (Paling Gelap)
     geometry: 'dodecahedron',
     previewImage: recycleImg,
-    noLinkText: 'Proprietary Software',
   },
 ];
 
@@ -232,7 +225,9 @@ const Card = React.forwardRef(({ project }, ref) => {
   useThreeScene(canvasRef, project.geometry, project.glow, isMobile)
 
   // Pisah state: satu untuk hover di title (fixed popup ikut mouse)
+  // satu untuk hover di tombol preview (popup muncul di atas tombol)
   const [titleHovered, setTitleHovered] = useState(false)
+  const [linkHovered, setLinkHovered] = useState(false)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
 
   const handleMouseMove = (e) => {
@@ -314,8 +309,11 @@ const Card = React.forwardRef(({ project }, ref) => {
           {/* ─── CTA AREA ─────────────────────────────────────────────── */}
           {project.isComingSoon ? (
             // Coming soon badge
-            <div className="pc-no-link">
-              Development in Progress
+            <div className="pc-status-wip">
+              <span className="pc-pulse italic" style={{ backgroundColor: project.glow }}></span>
+              <span style={{ fontFamily: 'Cormorant Garamond', color: project.glow, fontSize: '11px', letterSpacing: '1px' }}>
+                Development in Progress
+              </span>
             </div>
 
           ) : project.link ? (
@@ -324,32 +322,22 @@ const Card = React.forwardRef(({ project }, ref) => {
               href={project.link}
               target="_blank"
               rel="noopener noreferrer"
-              style={{
-                fontFamily: 'DM Sans, sans-serif',
-                fontSize: '10px',
-                padding: '4px 12px',
-                border: `1px solid ${project.glow}55`,
-                borderRadius: '99px',
-                color: project.glow,
-                letterSpacing: '0.08em',
-                textDecoration: 'none',
-                display: 'inline-block',
-                width: 'fit-content',
-                transition: 'background 0.2s ease, border-color 0.2s ease',
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = `${project.glow}15`}
-              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              className="pc-link"
+              style={{ '--ac': project.glow }}
             >
-              View Live
+              <span>View Live</span>
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                <path d="M2 12L12 2M12 2H5M12 2V9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </a>
 
           ) : (
             // Tidak ada link — tampilkan "Not publicly deployed" + tombol Preview jika ada gambar
-            <div className="pc-preview-wrapper" style={{ position: 'relative', display: 'inline-block' }}>
+            <div style={{ position: 'relative', display: 'inline-block' }}>
 
               {/* Popup preview muncul di atas tombol */}
               {project.previewImage && (
-                <div className="pc-preview-popup"
+                <div
                   style={{
                     position: 'absolute',
                     bottom: 'calc(100% + 12px)',
@@ -358,7 +346,11 @@ const Card = React.forwardRef(({ project }, ref) => {
                     borderRadius: '12px',
                     overflow: 'hidden',
                     zIndex: 9999,
+                    pointerEvents: 'none',
                     boxShadow: '0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.08)',
+                    opacity: linkHovered ? 1 : 0,
+                    transform: linkHovered ? 'translateY(0px)' : 'translateY(10px)',
+                    transition: 'opacity 0.25s ease, transform 0.25s ease',
                   }}
                 >
                   <img
@@ -383,13 +375,14 @@ const Card = React.forwardRef(({ project }, ref) => {
               {/* Row: teks + tombol Preview */}
               <div
                 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
+                onMouseEnter={() => setLinkHovered(true)}
+                onMouseLeave={() => setLinkHovered(false)}
               >
-                <span className="pc-no-link">{project.noLinkText || 'Internal Enterprise System'}</span>
+                <span className="pc-no-link">Not publicly deployed</span>
 
                 {/* Tombol Preview — hanya muncul kalau ada gambar */}
                 {project.previewImage && (
                   <span
-                    className="pc-preview-hover-target"
                     style={{
                       fontFamily: 'DM Sans, sans-serif',
                       fontSize: '10px',
@@ -397,12 +390,11 @@ const Card = React.forwardRef(({ project }, ref) => {
                       border: `1px solid ${project.glow}55`,
                       borderRadius: '99px',
                       color: project.glow,
-                      cursor: 'pointer',
+                      cursor: 'default',
                       letterSpacing: '0.08em',
                       transition: 'background 0.2s ease, border-color 0.2s ease',
+                      background: linkHovered ? `${project.glow}15` : 'transparent',
                     }}
-                    onMouseEnter={e => e.currentTarget.style.background = `${project.glow}15`}
-                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
                     Preview ↗
                   </span>
@@ -421,8 +413,6 @@ const Card = React.forwardRef(({ project }, ref) => {
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 const Projects = () => {
-  const isMobile = useIsMobile(900)
-  const [activePreviewMobile, setActivePreviewMobile] = useState(null)
   const wrapperRef = useRef(null)
   const stickyRef = useRef(null)
   const headerRef = useRef(null)
@@ -432,184 +422,69 @@ const Projects = () => {
   const dotRefs = useRef([])
 
   useLayoutEffect(() => {
-    if (isMobile) return
+    const cards = cardRefs.current
+    const dots = dotRefs.current
+    const total = cards.length
 
-    let ctx = gsap.context(() => {
-      const cards = cardRefs.current
-      const dots = dotRefs.current
-      const total = cards.length
-
-      cards.forEach((card, i) => {
-        gsap.set(card, {
-          position: 'absolute', inset: 0,
-          opacity: i === 0 ? 1 : 0,
-          y: i === 0 ? 0 : 60,
-          scale: i === 0 ? 1 : 0.96,
-          zIndex: i === 0 ? total : total - i,
-          pointerEvents: i === 0 ? 'auto' : 'none',
-        })
+    cards.forEach((card, i) => {
+      gsap.set(card, {
+        position: 'absolute', inset: 0,
+        opacity: i === 0 ? 1 : 0,
+        y: i === 0 ? 0 : 60,
+        scale: i === 0 ? 1 : 0.96,
+        zIndex: i === 0 ? total : total - i,
+        pointerEvents: i === 0 ? 'auto' : 'none',
       })
+    })
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: wrapperRef.current,
-          start: 'top top',
-          end: `+=${total * 100}vh`,
-          scrub: 0.6,
-          pin: true,
-          anticipatePin: 1,
-          onUpdate: (self) => {
-            const progress = self.progress
-            const idx = Math.min(Math.floor(progress * total), total - 1)
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: wrapperRef.current,
+        start: 'top top',
+        end: `+=${total * 100}vh`,
+        scrub: 0.6,
+        pin: true,
+        anticipatePin: 1,
+        onUpdate: (self) => {
+          const progress = self.progress
+          const idx = Math.min(Math.floor(progress * total), total - 1)
 
-            if (counterRef.current) counterRef.current.innerText = `0${idx + 1}`
-            if (progressFillRef.current) progressFillRef.current.style.width = `${progress * 100}%`
+          if (counterRef.current) counterRef.current.innerText = `0${idx + 1}`
+          if (progressFillRef.current) progressFillRef.current.style.width = `${progress * 100}%`
 
-            dots.forEach((dot, di) => {
-              if (di === idx) dot.classList.add('active')
-              else dot.classList.remove('active')
-            })
-          },
+          dots.forEach((dot, di) => {
+            if (di === idx) dot.classList.add('active')
+            else dot.classList.remove('active')
+          })
         },
-      })
+      },
+    })
 
-      cards.forEach((card, i) => {
-        if (i === total - 1) return
-        const next = cards[i + 1]
+    cards.forEach((card, i) => {
+      if (i === total - 1) return
+      const next = cards[i + 1]
 
-        tl.to(card, {
-          opacity: 0,
-          y: -100,
-          scale: 0.94,
-          rotateX: 12,
-          filter: 'blur(10px)',
-          pointerEvents: 'none',
-          duration: 1,
-        }, i)
+      tl.to(card, {
+        opacity: 0,
+        y: -100,
+        scale: 0.94,
+        rotateX: 12,
+        filter: 'blur(10px)',
+        duration: 1,
+      }, i)
 
-        tl.fromTo(next,
-          { opacity: 0, y: 100, scale: 0.92, filter: 'blur(15px)' },
-          { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', pointerEvents: 'auto', duration: 1 },
-          i
-        )
-      })
-    }, wrapperRef)
+      tl.fromTo(next,
+        { opacity: 0, y: 100, scale: 0.92, filter: 'blur(15px)' },
+        { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', pointerEvents: 'auto', duration: 1 },
+        i
+      )
+    })
 
-    return () => ctx.revert()
-  }, [isMobile])
+    return () => {
+      ScrollTrigger.getAll().forEach(t => t.kill())
+    }
+  }, [])
 
-  // ─── MOBILE RENDER (STACKED CARDS) ──────────────────────────────────────────
-  if (isMobile) {
-    return (
-      <div className="w-full bg-[#07050f] py-20 px-6 overflow-hidden">
-        <div className="mb-12">
-          <p className="font-['DM_Sans'] text-[10px] tracking-[0.3em] uppercase text-[#e8c8ff]/80 mb-3">✦ Selected Works</p>
-          <h2 className="font-['Clash_Display'] text-[38px] font-bold text-white tracking-tight leading-[1.1]">
-            Featured <br /><span className="bg-gradient-to-br from-[#e8c8ff] to-[#f9b8d4] bg-clip-text text-transparent">Projects</span>
-          </h2>
-        </div>
-
-        <div className="flex flex-col gap-6">
-          {projects.map((project, i) => {
-            // Ringkas deskripsi: ambil 1-2 kalimat pertama
-            const sentences = project.desc.split('.')
-            const shortDesc = (sentences[0] + (sentences.length > 1 ? '.' : '')).trim()
-
-            return (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="relative w-full rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md p-6 overflow-hidden flex flex-col"
-              >
-                {/* Background Glow */}
-                <div
-                  className="absolute right-[-10%] top-1/2 -translate-y-1/2 w-[180px] h-[180px] rounded-full blur-[45px] opacity-20 pointer-events-none"
-                  style={{ background: project.glow }}
-                />
-
-                {/* Header (Role, Title, Number) */}
-                <div className="flex justify-between items-start mb-5 relative z-10">
-                  <div className="flex flex-col pr-4">
-                    <span className="font-['DM_Sans'] text-[9px] uppercase tracking-[0.2em] text-white/50 mb-1.5">{project.role}</span>
-                    <h3 className="font-['Clash_Display'] text-2xl font-bold text-white leading-[1.2] tracking-[-0.01em]">{project.title}</h3>
-                  </div>
-                  <span className="font-['Clash_Display'] text-sm font-semibold text-white/30 pt-1">{project.number}</span>
-                </div>
-
-                {/* Short Desc */}
-                <p className="font-['Cormorant_Garamond'] italic text-[15px] text-white/70 leading-relaxed mb-6 relative z-10">
-                  {shortDesc}
-                </p>
-
-                {/* Tech Tags */}
-                <div className="flex flex-wrap gap-2 mb-7 relative z-10">
-                  {project.tags.map((tag, t) => (
-                    <span
-                      key={t}
-                      className="font-['DM_Sans'] text-[9px] uppercase tracking-[0.1em] px-3 py-1.5 rounded-full border border-white/10 bg-white/5 text-white/60"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Footer Actions */}
-                <div className="mt-auto relative z-10 pt-4 border-t border-white/5 flex items-center justify-between">
-                  <span className="font-['DM_Sans'] text-[10px] tracking-wider text-white/30">{project.year.split(' ')[0]}</span>
-
-                  {project.isComingSoon ? (
-                    <span className="font-['DM_Sans'] text-[10px] italic text-[#f9b8d4]/60 tracking-wider">In Development</span>
-                  ) : project.link ? (
-                    <a href={project.link} target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center font-['DM_Sans'] text-[10px] font-medium tracking-[0.1em] uppercase px-5 py-2.5 rounded-full border border-[#e8c8ff]/30 text-[#e8c8ff] hover:bg-[#e8c8ff]/10 transition-colors">
-                      View Live ↗
-                    </a>
-                  ) : (
-                    <div className="flex items-center gap-3">
-                      <span className="font-['DM_Sans'] text-[10px] italic text-white/30 tracking-wider">
-                        {project.noLinkText || 'Internal Enterprise System'}
-                      </span>
-                      {project.previewImage && (
-                        <div className="relative">
-                          <button
-                            onClick={() => setActivePreviewMobile(activePreviewMobile === i ? null : i)}
-                            className="inline-flex items-center font-['DM_Sans'] text-[9px] tracking-[0.1em] uppercase px-3 py-1.5 rounded-full border border-white/20 text-white/70 active:bg-white/10 transition-colors"
-                          >
-                            Preview ↗
-                          </button>
-
-                          {/* Popup Preview */}
-                          <div
-                            className="absolute bottom-[calc(100%+12px)] right-0 w-[220px] rounded-xl overflow-hidden shadow-2xl pointer-events-none transition-all duration-300 origin-bottom-right"
-                            style={{
-                              opacity: activePreviewMobile === i ? 1 : 0,
-                              transform: activePreviewMobile === i ? 'scale(1) translateY(0)' : 'scale(0.95) translateY(10px)',
-                              zIndex: 50,
-                              border: '1px solid rgba(255,255,255,0.08)'
-                            }}
-                          >
-                            <img src={project.previewImage} alt={project.title} className="w-full block" />
-                            <div className="p-2 bg-[#07050f]/95 backdrop-blur-md text-[9px] text-white/40 tracking-wider font-['DM_Sans'] border-t border-white/10">
-                              {project.title}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            )
-          })}
-        </div>
-      </div>
-    )
-  }
-
-  // ─── DESKTOP RENDER (3D STACKED) ──────────────────────────────────────────
   return (
     <div ref={wrapperRef} className="projects-wrapper">
       <div ref={stickyRef} className="projects-sticky">
@@ -659,9 +534,9 @@ const Projects = () => {
         .projects-wrapper { position: relative; width: 100%; height: auto; background: #07050f; }
         .projects-sticky { position: sticky; top: 0; width: 100%; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
         
-        .projects-header { display: flex; justify-content: space-between; align-items: flex-end; padding: clamp(3vh, 6vh, 8vh) clamp(4vw, 6vw, 8vw) clamp(2vh, 4vh, 5vh); z-index: 50; }
+        .projects-header { display: flex; justify-content: space-between; align-items: flex-end; padding: 6vh 6vw 4vh; z-index: 50; }
         .ph-eyebrow { font-family: 'DM Sans', sans-serif; font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(232,200,255,0.4); margin-bottom: 0.5rem; }
-        .ph-title { font-family: 'Clash Display', sans-serif; font-size: clamp(24px, 4.5vw, 60px); font-weight: 700; color: #fff; margin: 0; letter-spacing: -0.02em; line-height: 1; }
+        .ph-title { font-family: 'Clash Display', sans-serif; font-size: clamp(32px, 4.5vw, 60px); font-weight: 700; color: #fff; margin: 0; letter-spacing: -0.02em; line-height: 1; }
         .gradient-text { background: linear-gradient(135deg, #e8c8ff 0%, #f9b8d4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
         .ph-right { display: flex; flex-direction: column; align-items: flex-end; gap: 0.8rem; }
@@ -671,9 +546,9 @@ const Projects = () => {
         .ph-progress-bg { width: 140px; height: 2px; background: rgba(255,255,255,0.06); position: relative; overflow: hidden; border-radius: 99px; }
         .ph-progress-fill { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: linear-gradient(90deg, #e8c8ff, #f9b8d4); transition: width 0.2s ease-out; }
 
-        .cards-container { position: relative; flex: 1; margin: 0 clamp(3vw, 6vw, 8vw) clamp(3vh, 6vh, 8vh); perspective: 1500px; }
+        .cards-container { position: relative; flex: 1; margin: 0 6vw 6vh; perspective: 1500px; }
         
-        .pc-card { width: 100%; height: 100%; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; padding: clamp(1.2rem, 2.5rem, 3rem); display: flex; flex-direction: column; backdrop-filter: blur(12px); transform-style: preserve-3d; }
+        .pc-card { width: 100%; height: 100%; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; padding: 2.5rem; display: flex; flex-direction: column; backdrop-filter: blur(12px); overflow: hidden; transform-style: preserve-3d; }
         .pc-canvas { position: absolute; right: -5%; top: 50%; transform: translateY(-50%); width: 50%; height: 80%; z-index: 1; pointer-events: none; }
         .pc-glow { position: absolute; right: -10%; top: 50%; transform: translateY(-50%); width: 60%; height: 100%; z-index: 0; pointer-events: none; border-radius: 50%; }
 
@@ -685,20 +560,21 @@ const Projects = () => {
 
         .pc-body { flex: 1; display: flex; flex-direction: column; z-index: 2; position: relative; }
         .pc-left { display: flex; flex-direction: column; position: relative; }
-        .pc-bgnumber { position: absolute; left: -1rem; top: -1.5rem; font-family: 'Clash Display', sans-serif; font-size: clamp(80px, 14vw, 180px); font-weight: 700; opacity: 0.1; line-height: 1; z-index: -1; pointer-events: none; }
+        .pc-bgnumber { position: absolute; left: -1rem; top: -1.5rem; font-family: 'Clash Display', sans-serif; font-size: 180px; font-weight: 700; opacity: 0.1; line-height: 1; z-index: -1; pointer-events: none; }
         .pc-role { font-family: 'DM Sans', sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.25em; color: rgba(255,255,255,0.6); margin-bottom: 0.8rem; }
-        .pc-title { font-family: 'Clash Display', sans-serif; font-size: clamp(20px, 3.5vw, 44px); font-weight: 700; color: #fff; margin: 0 0 1.2rem; letter-spacing: -0.01em; }
-        .pc-desc { font-family: 'Cormorant Garamond', serif; font-size: clamp(20px, 2vw, 20px); font-weight: 500; line-height: 1.35; color: rgba(255,255,255,0.6); margin-bottom: 1rem; max-width: min(664px, 100%); font-style: italic; }
+        .pc-title { font-family: 'Clash Display', sans-serif; font-size: clamp(24px, 3.5vw, 44px); font-weight: 700; color: #fff; margin: 0 0 1.2rem; letter-spacing: -0.01em; }
+        .pc-desc { font-family: 'Cormorant Garamond', serif; font-size: clamp(16px, 1.8vw, 22px); line-height: 1.35; color: rgba(255,255,255,0.6); margin-bottom: 2rem; max-width: 440px; font-style: italic; }
+        
         .pc-tags { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 2.5rem; }
         .pc-tag { font-family: 'DM Sans', sans-serif; font-size: 10px; padding: 6px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 99px; color: rgba(255,255,255,0.5); transition: all 0.3s; }
         .pc-tag:hover { color: var(--ac); border-color: var(--ac); background: rgba(255,255,255,0.06); }
 
-        .pc-link { display: inline-flex; align-items: center; gap: 0.8rem; text-decoration: none; color: #fff; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 10px 24px; border: 1px solid rgba(255,255,255,0.15); border-radius: 99px; transition: all 0.3s; width: fit-content; }
+        .pc-link { display: inline-flex; align-items: center; gap: 0.8rem; text-decoration: none; color: #fff; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 12px 24px; border: 1px solid rgba(255,255,255,0.15); border-radius: 99px; transition: all 0.3s; width: fit-content; }
         .pc-link:hover { background: var(--ac); border-color: var(--ac); color: #000; }
+        .pc-status-wip { display: flex; align-items: center; gap: 0.6rem; }
+        .pc-pulse { width: 6px; height: 6px; border-radius: 50%; display: inline-block; animation: pc-pulse 2s infinite; }
+        @keyframes pc-pulse { 0% { transform: scale(0.95); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.5; } }
         .pc-no-link { font-family: 'DM Sans', sans-serif; font-size: 11px; color: rgba(255,255,255,0.25); letter-spacing: 0.05em; font-style: italic; }
-        
-        .pc-preview-popup { opacity: 0; transform: translateY(10px); transition: opacity 0.25s ease, transform 0.25s ease; pointer-events: none; }
-        .pc-preview-wrapper:hover .pc-preview-popup { opacity: 1; transform: translateY(0); }
 
         .pc-bottom-rule { position: absolute; bottom: 0; left: 10%; right: 10%; height: 1px; opacity: 0.5; }
 
@@ -707,34 +583,16 @@ const Projects = () => {
         .nav-dot.active { height: 24px; background: #e8c8ff; border-radius: 4px; box-shadow: 0 0 10px #e8c8ff; }
 
         @media (max-width: 900px) {
+          .pc-card { padding: 1.5rem; }
           .pc-canvas { width: 70%; right: -15%; }
+          .pc-bgnumber { font-size: 120px; top: -1rem; }
           .ph-right { display: none; }
+          
           .pc-mobile-fallback { position: absolute; right: -5%; top: 50%; transform: translateY(-50%); width: 50%; height: 80%; z-index: 1; display: flex; align-items: center; justify-content: center; pointer-events: none; }
           .pc-fallback-orb { width: 120px; height: 120px; border-radius: 50%; background: var(--glow); filter: blur(40px); opacity: 0.15; animation: pulse 4s ease-in-out infinite; }
           @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.15; } 50% { transform: scale(1.2); opacity: 0.25; } }
-          
-          /* Hide side nav earlier to prevent overlapping text on tablet */
-          .projects-nav { display: none; }
-        }
-
-        @media (max-width: 768px) {
-          .projects-header { padding: clamp(2vh, 4vh, 6vh) 1.5rem clamp(1.5vh, 3vh, 4vh); }
-          .ph-title { font-size: clamp(28px, 6vw, 40px); }
-          .cards-container { margin: 0 1.5rem 2rem; }
-          .pc-card { padding: 1.25rem; border-radius: 16px; }
-          .pc-topbar { margin-bottom: 1rem; gap: 0.8rem; }
-          .pc-title { font-size: 22px; margin-bottom: 0.8rem; }
-          .pc-desc { font-size: 13px; line-height: 1.45; font-weight: 1000; margin-bottom: 1.25rem; }
-          .pc-tags { margin-bottom: 1.5rem; gap: 0.4rem; flex-wrap: wrap; }
-          .pc-tag { font-size: 10px; padding: 4px 10px; }
-          .pc-bgnumber { top: -0.5rem; left: -0.5rem; font-size: 80px; }
-        }
-
-        @media (min-width: 1920px) {
-          .cards-container { max-width: 1600px; margin-left: auto; margin-right: auto; }
         }
       `}</style>
-
     </div>
   )
 }

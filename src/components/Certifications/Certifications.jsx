@@ -59,6 +59,7 @@ export default function Certifications() {
   const [hoveredAchiev, setHoveredAchiev] = useState(null)
   const [visible, setVisible] = useState(false)
   const [activeFilter, setActiveFilter] = useState('all')
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   // ─── Entrance animation ──────────────────────────────────────────────────────
   const triggerEntrance = useCallback(() => {
@@ -150,17 +151,17 @@ export default function Certifications() {
   return (
     <section
       ref={sectionRef}
+      className="lg:min-h-screen pb-12 lg:pb-0"
       style={{
         position: 'relative',
         background: '#07040f',
-        minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
       }}
     >
       {/* ── Header ── */}
-      <div style={{ padding: '8vh 8vw 0', position: 'relative', zIndex: 10 }}>
+      <div style={{ padding: 'clamp(4vh,8vh,10vh) clamp(4vw,8vw,10vw) 0', position: 'relative', zIndex: 50 }}>
         <p style={{
           fontFamily: 'DM Sans, sans-serif', fontSize: 10, letterSpacing: '0.35em',
           textTransform: 'uppercase', color: 'rgba(232,200,255,0.8)', margin: '0 0 0.5rem',
@@ -183,8 +184,8 @@ export default function Certifications() {
             </span>
           </h2>
 
-          {/* Filter buttons */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+          {/* Filter buttons (Desktop) */}
+          <div className="hidden lg:flex flex-wrap gap-[0.4rem] max-w-full">
             {[
               { key: 'all', label: 'All' },
               { key: 'achievements', label: '🏆 Awards', color: 'rgba(255,255,255,0.7)' },
@@ -206,10 +207,63 @@ export default function Certifications() {
               </button>
             ))}
           </div>
+
+          {/* Custom Dropdown (Mobile) */}
+          <div className="block lg:hidden w-full mt-4 relative z-50">
+            <div className="relative w-full max-w-[240px]">
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-white/10 bg-white/5 backdrop-blur-md transition-all active:scale-[0.98]"
+              >
+                <span className="font-['DM_Sans'] text-[11px] font-medium tracking-[0.15em] uppercase text-white flex items-center gap-2">
+                  {activeFilter === 'all' && 'All Categories'}
+                  {activeFilter === 'achievements' && '🏆 Awards'}
+                  {activeFilter !== 'all' && activeFilter !== 'achievements' && (
+                    <>
+                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: constellations[activeFilter]?.color, boxShadow: `0 0 5px ${constellations[activeFilter]?.color}` }} />
+                      {constellations[activeFilter]?.label}
+                    </>
+                  )}
+                </span>
+                <svg className={`w-4 h-4 text-white/50 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {/* Dropdown Menu */}
+              <div
+                className={`absolute top-[calc(100%+8px)] left-0 w-full p-2 rounded-xl border border-white/10 bg-[#120e23]/95 backdrop-blur-xl transition-all duration-300 origin-top shadow-2xl ${isDropdownOpen ? 'opacity-100 scale-y-100 pointer-events-auto' : 'opacity-0 scale-y-95 pointer-events-none'
+                  }`}
+              >
+                {[
+                  { key: 'all', label: 'All Categories', color: '#fff' },
+                  { key: 'achievements', label: '🏆 Awards', color: '#fff' },
+                  ...Object.entries(constellations).map(([k, v]) => ({ key: k, label: v.label, color: v.color }))
+                ].map((opt) => (
+                  <button
+                    key={opt.key}
+                    onClick={() => {
+                      setActiveFilter(opt.key);
+                      setIsDropdownOpen(false);
+                    }}
+                    className={`w-full flex items-center px-3 py-3 rounded-lg transition-all text-left font-['DM_Sans'] text-[10px] tracking-wider uppercase mb-1 last:mb-0 ${activeFilter === opt.key ? 'bg-white/10 text-white font-semibold' : 'text-white/60 hover:bg-white/5 hover:text-white'
+                      }`}
+                  >
+                    <span style={{ color: activeFilter === opt.key ? opt.color : 'inherit', flex: 1 }}>{opt.label}</span>
+                    {activeFilter === opt.key && (
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: opt.color }}>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Zone legend dots */}
-        <div style={{ display: 'flex', gap: '2rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+        <div className="hidden lg:flex" style={{ gap: '2rem', marginTop: '1rem', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.9)', boxShadow: '0 0 8px rgba(255,255,255,0.5)' }} />
             <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>Achievements</span>
@@ -222,19 +276,69 @@ export default function Certifications() {
           ))}
         </div>
 
-        <p style={{ fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic', fontSize: 'clamp(12px, 1.3vw, 15px)', color: 'rgba(255,255,255,0.5)', margin: '0.5rem 0 0' }}>
+        <p className="hidden lg:block" style={{ fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic', fontSize: 'clamp(12px, 1.3vw, 15px)', color: 'rgba(255,255,255,0.5)', margin: '0.5rem 0 0' }}>
           ✦ white stars = awards · colored stars = certifications · hover to explore · click to open
         </p>
       </div>
 
-      {/* ── Canvas ── */}
+      {/* ── Canvas (Desktop Only) ── */}
       <canvas
         ref={canvasRef}
+        className="hidden lg:block"
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }}
       />
 
-      {/* ── Stars container ── */}
-      <div style={{ position: 'relative', flex: 1, minHeight: '70vh', zIndex: 5 }}>
+      {/* ── Mobile List Container (Tablet & Below) ── */}
+      <div className="block lg:hidden relative z-10 px-[5vw] py-[2vh] w-full max-w-3xl mx-auto mb-8">
+        <div className="grid grid-cols-2 gap-3">
+          {/* Mobile Achievements */}
+          {achievements
+            .filter(ach => activeFilter === 'all' || activeFilter === 'achievements')
+            .map(ach => (
+              <div key={ach.id} className="p-4 rounded-xl border border-white/10 bg-white/5 backdrop-blur-md flex flex-col gap-1 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-white/10 blur-[20px] rounded-full pointer-events-none" />
+                <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: '0 0 4px' }}>🏆 Achievement</p>
+                <h3 style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 600, color: '#fff', margin: '0 0 2px', lineHeight: 1.4 }}>{ach.name}</h3>
+                <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 11, color: 'rgba(255,255,255,0.35)', margin: 0 }}>{ach.org} · {ach.year}</p>
+              </div>
+            ))}
+
+          {/* Mobile Courses */}
+          {courses
+            .filter(c => activeFilter === 'all' || activeFilter === c.category)
+            .map(course => {
+              const cat = constellations[course.category]
+              return (
+                <a
+                  key={course.id}
+                  href={course.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block p-4 rounded-xl border bg-[#0a0815] backdrop-blur-md flex flex-col relative overflow-hidden transition-all active:scale-[0.98]"
+                  style={{ borderColor: `${cat.color}30` }}
+                >
+                  <div className="absolute -top-4 -right-4 w-20 h-20 blur-[24px] rounded-full pointer-events-none" style={{ background: `${cat.color}20` }} />
+                  <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: cat.color, opacity: 0.8, margin: '0 0 6px' }}>{cat.label}</p>
+                  <h3 style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 500, color: '#fff', margin: '0 0 10px', lineHeight: 1.4 }}>{course.name}</h3>
+
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: 'auto' }}>
+                    <span style={{
+                      fontFamily: 'DM Sans, sans-serif', fontSize: 9,
+                      color: levelColor[course.level],
+                      background: levelColor[course.level] + '15',
+                      border: '1px solid ' + levelColor[course.level] + '30',
+                      borderRadius: 999, padding: '2px 8px',
+                    }}>{course.level}</span>
+                    <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 10, color: 'rgba(255,255,255,0.4)' }}>{course.hours} jam</span>
+                  </div>
+                </a>
+              )
+            })}
+        </div>
+      </div>
+
+      {/* ── Stars container (Desktop Only) ── */}
+      <div className="hidden lg:block relative flex-1 min-h-[70vh] z-5">
 
         {/* ACHIEVEMENT STARS — top zone */}
         {achievements.map((ach, i) => {
@@ -284,7 +388,7 @@ export default function Certifications() {
                 <div style={{
                   position: 'absolute', bottom: '130%', left: '50%', transform: 'translateX(-50%)',
                   background: 'rgba(10,8,15,0.96)', border: '1px solid rgba(255,255,255,0.15)',
-                  borderRadius: 12, padding: '12px 16px', width: 220,
+                  borderRadius: 12, padding: '12px 16px', width: 'min(220px, calc(100vw - 2rem))',
                   backdropFilter: 'blur(16px)', pointerEvents: 'none', zIndex: 30,
                 }}>
                   <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: '0 0 5px' }}>🏆 Achievement</p>
@@ -344,7 +448,7 @@ export default function Certifications() {
                 <div style={{
                   position: 'absolute', bottom: '130%', left: '50%', transform: 'translateX(-50%)',
                   background: 'rgba(10,8,15,0.96)', border: `1px solid ${cat.color}25`,
-                  borderRadius: 12, padding: '10px 14px', width: 210,
+                  borderRadius: 12, padding: '10px 14px', width: 'min(210px, calc(100vw - 2rem))',
                   backdropFilter: 'blur(16px)', pointerEvents: 'none', zIndex: 30,
                 }}>
                   <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: cat.color, opacity: 0.6, margin: '0 0 4px' }}>{cat.label}</p>
@@ -368,9 +472,9 @@ export default function Certifications() {
       </div>
 
       {/* ── Bottom legend ── */}
-      <div style={{
-        padding: '2vh 8vw 6vh', position: 'relative', zIndex: 10,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem',
+      <div className="hidden lg:flex" style={{
+        padding: 'clamp(1vh,2vh,3vh) clamp(4vw,8vw,10vw) clamp(3vh,6vh,8vh)', position: 'relative', zIndex: 10,
+        alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem',
       }}>
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
           <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 9, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.15em', textTransform: 'uppercase', marginRight: 4 }}>Level:</span>
@@ -381,7 +485,7 @@ export default function Certifications() {
             </div>
           ))}
         </div>
-        <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 10, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.15em', textTransform: 'uppercase', margin: 0 }}>
+        <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 10, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.15em', textTransform: 'uppercase', margin: 0 }}>
           Dicoding Indonesia · 24 Certified Courses
         </p>
       </div>

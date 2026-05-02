@@ -175,40 +175,25 @@ const Education = () => {
   )
 
   return (
-    <section
-      ref={sectionRef}
-      style={{
-        background: '#07040f',
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '10vh 6vw',
-        position: 'relative',
-        overflow: 'hidden',
-      }}
-    >
-      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 55% 60% at 72% 50%, rgba(80,40,140,0.) 0%, transparent 70%)' }} />
+    <section ref={sectionRef} className="edu-section">
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 40% 50% at 20% 50%, rgba(30,15,60,0.18) 0%, transparent 70%)' }} />
 
-      <p style={{ position: 'absolute', top: '6vh', left: '6vw', fontFamily: 'DM Sans, sans-serif', fontSize: 10, letterSpacing: '0.35em', textTransform: 'uppercase', color: 'rgba(232,200,255,0.8)', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-        ✦ Education & Organizations
-      </p>
+      <p className="edu-eyebrow">✦ Education & Organizations</p>
 
-      <div style={{ width: '100%', maxWidth: 1100, display: 'grid', gridTemplateColumns: '1fr 320px', gap: '5vw', alignItems: 'center' }}>
+      <div className="edu-grid">
 
         {/* LEFT */}
         <div ref={leftRef} style={{ opacity: 0 }}>
-          <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'rgba(232,200,255,0.7)', margin: '0 0 0.6rem' }}>2021 – 2025</p>
-          <h2 style={{ fontFamily: 'Clash Display, Arial Black, sans-serif', fontSize: 'clamp(28px,3.5vw,52px)', fontWeight: 700, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.0, margin: '0 0 0.5rem' }}>
-          B.Comp.Sc.<br />
-            <span style={{ background: 'linear-gradient(120deg,#e8c8ff,#c8b4ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Information Technology</span>
+          <p className="edu-period">2021 – 2025</p>
+          <h2 className="edu-degree">
+            B.Comp.Sc.<br />
+            <span className="edu-degree-grad">Information Technology</span>
           </h2>
-          <p style={{ fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic', fontSize: 'clamp(15px,1.6vw,20px)', color: 'rgba(232,200,255,0.6)', margin: '0 0 2rem' }}>Universitas Muhammadiyah Yogyakarta</p>
+          <p className="edu-university">Universitas Muhammadiyah Yogyakarta</p>
 
           <div style={{ width: 36, height: 1, background: 'rgba(232,200,255,0.18)', marginBottom: '2rem' }} />
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', marginBottom: '3rem' }}>
+          <div className="edu-achievements">
             {[
               { label: 'Bangkit Academy 2024', sub: 'Google × GoTo × Traveloka — Android Learning Path', accent: '#a8c7ff' },
               { label: 'Teaching Assistant', sub: 'Software Testing & Quality Assurance (STQA)', accent: '#c8b4ff' },
@@ -216,19 +201,20 @@ const Education = () => {
               <div key={i} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: a.accent, marginTop: 6, flexShrink: 0, boxShadow: `0 0 8px ${a.accent}88` }} />
                 <div>
-                  <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.8)', margin: '0 0 3px' }}>{a.label}</p>
-                  <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 11, color: 'rgba(232,200,255,0.38)', margin: 0, lineHeight: 1.6 }}>{a.sub}</p>
+                  <p className="edu-achievement-label">{a.label}</p>
+                  <p className="edu-achievement-sub">{a.sub}</p>
                 </div>
               </div>
             ))}
           </div>
 
-          <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'rgba(232,200,255,0.3)', margin: '0 0 1.2rem' }}>Organizations</p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+          <p className="edu-orgs-label">Organizations</p>
+          <div className="edu-orgs-grid">
             {orgs.map((org, i) => (
               <div
                 key={i}
-                style={{ padding: '0.8rem 1rem', borderRadius: 12, background: org.glow + '07', border: '1px solid ' + org.glow + '18', cursor: 'default', transition: 'all 0.3s ease' }}
+                className="edu-org-card"
+                style={{ background: org.glow + '07', border: '1px solid ' + org.glow + '18' }}
                 onMouseEnter={e => { e.currentTarget.style.background = org.glow + '14'; e.currentTarget.style.borderColor = org.glow + '40'; e.currentTarget.style.transform = 'translateY(-2px)' }}
                 onMouseLeave={e => { e.currentTarget.style.background = org.glow + '07'; e.currentTarget.style.borderColor = org.glow + '18'; e.currentTarget.style.transform = 'translateY(0)' }}
               >
@@ -243,7 +229,7 @@ const Education = () => {
         {/* RIGHT — Lanyard + Card */}
         <div
           ref={cardWrapRef}
-          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: 0 }}
+          className="edu-card-wrap"
         >
           {/* Lanyard swings with card */}
           <div style={{ transform: `rotate(${angle * 0.85}deg)`, transformOrigin: 'top center', width: 110, pointerEvents: 'none', userSelect: 'none' }}>
@@ -257,22 +243,8 @@ const Education = () => {
             onTouchStart={onDragStart}
             onMouseMove={onMouseMove}
             onMouseLeave={onMouseLeave}
-            style={{
-              width: 250,
-              borderRadius: 20,
-              background: 'linear-gradient(145deg, rgba(30,18,60,0.97) 0%, rgba(12,8,28,0.99) 100%)',
-              border: '1px solid rgba(232,200,255,0.12)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              overflow: 'hidden',
-              boxShadow: '0 40px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(232,200,255,0.05), inset 0 1px 0 rgba(232,200,255,0.08)',
-              transformStyle: 'preserve-3d',
-              cursor: 'grab',
-              position: 'relative',
-              userSelect: 'none',
-              transform: `rotate(${angle * 0.85}deg)`,
-              transformOrigin: 'top center',
-            }}
+            className="edu-card"
+            style={{ transform: `rotate(${angle * 0.85}deg)` }}
           >
             {/* Holo shimmer */}
             <div style={{ position: 'absolute', inset: 0, zIndex: 10, pointerEvents: 'none', background: 'linear-gradient(135deg, transparent 35%, rgba(232,200,255,0.05) 50%, transparent 65%)', borderRadius: 20 }} />
@@ -294,9 +266,9 @@ const Education = () => {
             {/* Info */}
             <div style={{ padding: '0 18px 18px', textAlign: 'center' }}>
               <h3 style={{ fontFamily: 'Clash Display, Arial Black, sans-serif', fontSize: 18, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', margin: '0 0 4px' }}>Mayla</h3>
-              <p style={{ fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic', fontSize: 12, color: 'rgba(232,200,255,0.7)', margin: '0 0 14px' }}>Design Engineer</p>
+              <p style={{ fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic', fontSize: 12, color: 'rgba(232,200,255,0.9)', margin: '0 0 14px' }}>Design Engineer</p>
 
-              <div style={{ width: '100%', height: 1, background: 'rgba(232,200,255,0.08)', marginBottom: 14 }} />
+              <div style={{ width: '100%', height: 1, background: 'rgba(232,200,255,0.2)', marginBottom: 14 }} />
 
               {[
                 { label: 'Institution', value: 'UMY' },
@@ -304,8 +276,8 @@ const Education = () => {
                 { label: 'Year', value: '2021 – 2025' },
               ].map((row, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 7 }}>
-                  <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(232,200,255,0.28)' }}>{row.label}</span>
-                  <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 11, color: 'rgba(255,255,255,0.62)' }}>{row.value}</span>
+                  <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(232,200,255,0.8)' }}>{row.label}</span>
+                  <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 11, color: 'rgba(255,255,255,1)' }}>{row.value}</span>
                 </div>
               ))}
 
@@ -320,11 +292,177 @@ const Education = () => {
             </div>
           </div>
 
-          <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(232,200,255,0.15)', margin: '14px 0 0', userSelect: 'none' }}>
-            ← drag me →
-          </p>
+          <p className="edu-drag-hint">← drag me →</p>
         </div>
       </div>
+
+      <style>{`
+        .edu-section {
+          background: #07040f;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: clamp(8vh, 10vh, 12vh) clamp(4vw, 6vw, 8vw);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .edu-eyebrow {
+          position: absolute;
+          top: clamp(4vh, 6vh, 8vh);
+          left: clamp(4vw, 6vw, 8vw);
+          font-family: 'DM Sans', sans-serif;
+          font-size: 10px;
+          letter-spacing: 0.35em;
+          text-transform: uppercase;
+          color: rgba(232,200,255,0.8);
+          margin: 0;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .edu-grid {
+          width: 100%;
+          max-width: 1100px;
+          display: grid;
+          grid-template-columns: 1fr 320px;
+          gap: 5vw;
+          align-items: center;
+        }
+
+        .edu-period {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 10px;
+          letter-spacing: 0.28em;
+          text-transform: uppercase;
+          color: rgba(232,200,255,0.7);
+          margin: 0 0 0.6rem;
+        }
+        .edu-degree {
+          font-family: 'Clash Display', 'Arial Black', sans-serif;
+          font-size: clamp(22px, 3.5vw, 52px);
+          font-weight: 700;
+          color: #fff;
+          letter-spacing: -0.03em;
+          line-height: 1.0;
+          margin: 0 0 0.5rem;
+        }
+        .edu-degree-grad {
+          background: linear-gradient(120deg, #e8c8ff, #c8b4ff);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        .edu-university {
+          font-family: 'Cormorant Garamond', serif;
+          font-style: italic;
+          font-size: clamp(13px, 1.6vw, 20px);
+          color: rgba(232,200,255,0.6);
+          margin: 0 0 2rem;
+        }
+
+        .edu-achievements {
+          display: flex;
+          flex-direction: column;
+          gap: 1.2rem;
+          margin-bottom: 3rem;
+        }
+        .edu-achievement-label {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 14px;
+          font-weight: 500;
+          color: rgba(255,255,255,0.8);
+          margin: 0 0 3px;
+        }
+        .edu-achievement-sub {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 11px;
+          color: rgba(232,200,255,0.38);
+          margin: 0;
+          line-height: 1.6;
+        }
+
+        .edu-orgs-label {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 10px;
+          letter-spacing: 0.28em;
+          text-transform: uppercase;
+          color: rgba(232,200,255,0.3);
+          margin: 0 0 1.2rem;
+        }
+        .edu-orgs-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.75rem;
+        }
+        .edu-org-card {
+          padding: 0.8rem 1rem;
+          border-radius: 12px;
+          cursor: default;
+          transition: all 0.3s ease;
+        }
+
+        /* RIGHT column */
+        .edu-card-wrap {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          opacity: 0;
+        }
+        .edu-card {
+          width: 250px;
+          border-radius: 20px;
+          background: linear-gradient(145deg, rgba(30,18,60,0.97) 0%, rgba(12,8,28,0.99) 100%);
+          border: 1px solid rgba(232,200,255,0.12);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          overflow: hidden;
+          box-shadow: 0 40px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(232,200,255,0.05), inset 0 1px 0 rgba(232,200,255,0.08);
+          transform-style: preserve-3d;
+          cursor: grab;
+          position: relative;
+          user-select: none;
+          transform-origin: top center;
+        }
+        .edu-drag-hint {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 9px;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: rgba(232,200,255,0.15);
+          margin: 14px 0 0;
+          user-select: none;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+          .edu-grid {
+            grid-template-columns: 1fr;
+            gap: 3rem;
+          }
+          .edu-card-wrap {
+            order: -1;
+          }
+          .edu-eyebrow {
+            position: relative;
+            top: auto;
+            left: auto;
+            margin-bottom: 1.5rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .edu-orgs-grid {
+            grid-template-columns: 1fr;
+          }
+          .edu-card {
+            width: min(250px, 82vw);
+          }
+        }
+      `}</style>
     </section>
   )
 }

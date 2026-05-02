@@ -29,7 +29,7 @@ const About = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      wordsRef.current.forEach((word, i) => {
+      wordsRef.current.forEach((word) => {
         if (!word) return
         gsap.fromTo(word,
           { opacity: 0.12, color: 'rgba(255,255,255,0.12)' },
@@ -57,94 +57,132 @@ const About = () => {
   return (
     <section
       ref={sectionRef}
-      style={{
-        minHeight: '100vh',
-        background: '#0d0a14',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '10vh 8vw',
-      }}
+      className="about-section"
     >
       {/* Small label */}
-      <p style={{
-        fontFamily: 'DM Sans, sans-serif',
-        fontSize: 11,
-        letterSpacing: '0.35em',
-        textTransform: 'uppercase',
-        color: 'rgba(232,200,255,0.8)',
-        marginBottom: '4rem',
-        alignSelf: 'flex-start',
-      }}>
-        ✦ About me
-      </p>
+      <p className="about-eyebrow">✦ About me</p>
 
       {/* Big text */}
-      <div style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '0.4em 0.5em',
-        maxWidth: 1100,
-        alignSelf: 'flex-start',
-      }}>
+      <div className="about-words-wrap">
         {words.map((w, i) => (
           <span
             key={i}
             ref={el => wordsRef.current[i] = el}
             data-highlight={w.highlight}
-            style={{
-              fontFamily: 'Clash Display, sans-serif',
-              fontSize: 'clamp(36px, 5.5vw, 80px)',
-              fontWeight: 700,
-              lineHeight: 1.05,
-              letterSpacing: '-0.02em',
-              color: 'rgba(255,255,255,0.12)',
-              transition: 'color 0.3s',
-              cursor: 'default',
-            }}
+            className="about-word"
           >
             {w.text}
           </span>
         ))}
       </div>
 
-      {/* Sub info — muncul di bawah */}
-      <div style={{
-        marginTop: '6rem',
-        alignSelf: 'flex-end',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end',
-        gap: '0.5rem',
-        opacity: 0,
-        animation: 'fadeInUp 1s ease forwards',
-        animationDelay: '0.5s',
-      }}>
-        <p style={{
-          fontFamily: 'Cormorant Garamond, serif',
-          fontSize: 'clamp(16px, 2vw, 24px)',
-          fontStyle: 'italic',
-          color: 'rgba(249,184,212,0.7)',
-          letterSpacing: '0.05em',
-        }}>
+      {/* Sub info */}
+      <div className="about-sub">
+        <p className="about-quote">
           "I care about the gap between how something looks and how it feels to use — and I close it with code."
         </p>
-        <p style={{
-          fontFamily: 'DM Sans, sans-serif',
-          fontSize: 12,
-          letterSpacing: '0.2em',
-          textTransform: 'uppercase',
-          color: 'rgba(255,255,255,0.6)',
-        }}>
-          - Mayla, 2025
-        </p>
+        <p className="about-attribution">- Mayla, 2025</p>
       </div>
 
       <style>{`
-        @keyframes fadeInUp {
+        .about-section {
+          min-height: 100vh;
+          background: #0d0a14;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: clamp(6vh, 10vh, 12vh) clamp(5vw, 8vw, 10vw);
+        }
+
+        .about-eyebrow {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 10px;
+          letter-spacing: 0.35em;
+          text-transform: uppercase;
+          color: rgba(232,200,255,1);
+          margin-bottom: clamp(2rem, 4rem, 5rem);
+          align-self: flex-start;
+        }
+
+        .about-words-wrap {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.4em 0.5em;
+          max-width: min(1100px, 100%);
+          align-self: flex-start;
+        }
+
+        .about-word {
+          font-family: 'Clash Display', sans-serif;
+          font-size: clamp(40px, 5.5vw, 100px);
+          font-weight: 700;
+          line-height: 1.05;
+          letter-spacing: -0.02em;
+          color: rgba(255,255,255,0.12);
+          transition: color 0.3s;
+          cursor: default;
+        }
+
+        .about-sub {
+          margin-top: clamp(3rem, 6rem, 8rem);
+          align-self: flex-end;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 0.5rem;
+          opacity: 0;
+          animation: aboutFadeUp 1s ease forwards;
+          animation-delay: 0.5s;
+          max-width: min(680px, 100%);
+        }
+
+        .about-quote {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(14px, 2vw, 24px);
+          font-style: italic;
+          font-weight: 900;
+          color: rgba(243, 216, 227, 0.9);
+          letter-spacing: 0.05em;
+          text-align: right;
+          margin: 0;
+        }
+
+        .about-attribution {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 12px;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.6);
+          margin: 0;
+        }
+
+        @keyframes aboutFadeUp {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+          .about-section {
+            padding: clamp(6vh, 8vh, 10vh) clamp(1.5rem, 6vw, 3rem);
+          }
+          .about-word {
+            font-size: clamp(34px, 9vw, 56px);
+            letter-spacing: -0.01em;
+          }
+          .about-words-wrap {
+            gap: 0.25em 0.35em;
+          }
+          .about-sub {
+            margin-top: clamp(3rem, 8vh, 5rem);
+            align-self: flex-start;
+            align-items: flex-start;
+          }
+          .about-quote {
+            text-align: left;
+            font-size: clamp(14px, 4vw, 18px);
+            line-height: 1.4;
+          }
         }
       `}</style>
     </section>
