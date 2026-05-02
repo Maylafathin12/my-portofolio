@@ -167,7 +167,7 @@ const About = () => {
             padding: clamp(6vh, 8vh, 10vh) clamp(1.5rem, 6vw, 3rem);
           }
           .about-word {
-            font-size: clamp(34px, 9vw, 56px);
+            font-size: clamp(34px, 9vw, 90px);
             letter-spacing: -0.01em;
           }
           .about-words-wrap {
