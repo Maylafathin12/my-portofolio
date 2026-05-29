@@ -79,7 +79,9 @@ const About = () => {
       {/* Sub info */}
       <div className="about-sub">
         <p className="about-quote">
-          "I care about the gap between how something looks and how it feels to use — and I close it with code."
+          "I care about the gap between how something looks
+          and how it actually feels to use —
+          that gap is where I live, and I close it with code."
         </p>
         <p className="about-attribution">- Mayla, 2025</p>
       </div>

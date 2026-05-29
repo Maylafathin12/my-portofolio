@@ -211,7 +211,7 @@ const Hero = () => {
             <div ref={roleRef} className="hero-role">
               <span>Design Engineer</span>
               <span className="hero-role-dot" />
-              <span>Front-End Developer</span>
+              <span>Frontend Engineer</span>
             </div>
           </div>
         </div>
@@ -219,11 +219,11 @@ const Hero = () => {
         {/* ── RIGHT INFO ── */}
         <div ref={rightInfoRef} className="hero-right-info">
           {[
-            { label: 'Stack', value: 'React · Next.js · Vue' },
-            { label: 'Creative', value: 'Three.js · GSAP · Framer-Motion' },
+            { label: 'Core Stack', value: 'React · Next.js · Vue' },
+            { label: 'CREATIVE & 3D', value: 'Three.js · GSAP · Framer-Motion' },
             { label: 'Mobile', value: 'Flutter · Kotlin' },
-            { label: 'Design', value: 'Figma · UI/UX' },
-            { label: 'Open to', value: 'Full-time & Freelance' },
+            { label: 'Design & Tools', value: 'Figma · UI/UX' },
+            { label: 'Available now —', value: 'ready to ship on day one' },
           ].map((item, i) => (
             <div key={i} className="hero-right-item">
               <p className="hero-right-label">{item.label}</p>
@@ -237,16 +237,16 @@ const Hero = () => {
       <div className="hero-bottom-area">
         {/* Scroll hint - kiri bawah, nggak bentrok sama nama */}
         <div className="hero-scroll-hint">
-          <span className="hero-scroll-text">scroll</span>
+          <span className="hero-scroll-text">scroll to explore</span>
           <div className="hero-scroll-line" />
         </div>
 
         {/* CV Download button */}
-        <a href="/CV_Mayla_Fathin.pdf" download="CV_Mayla_Fathin.pdf" className="hero-cv-btn">
+        <a href={`${import.meta.env.BASE_URL}cv-mayla.pdf`} download="cv-mayla.pdf" className="hero-cv-btn">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
             <path d="M6 1v7M3 5l3 3 3-3M1 10h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          Download CV
+          Get My Resume
         </a>
       </div>
 
