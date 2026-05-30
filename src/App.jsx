@@ -8,13 +8,38 @@ import Experience from './components/Experience/Experience'
 import Skills from './components/Skills/Skills'
 import Education from './components/Education/Education'
 import Contact from './components/Contact/Contact'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import ConstellationNav from './components/ConstellationNav/ConstellationNav'
 import Certifications from './components/Certifications/Certifications'
+import ProjectDetail from './components/ProjectDetail/ProjectDetail'
+import LanguageToggle from './components/LanguageToggle/LanguageToggle'
+
+function Home({ preloaderDone, activeSection }) {
+  return (
+    <div style={{ opacity: preloaderDone ? 1 : 0, transition: 'opacity 0.8s ease' }}>
+      <ConstellationNav activeSection={activeSection} />
+      <section id="hero"><Hero /></section>
+      <section id="about"><About /></section>
+      <section id="projects"><Projects /></section>
+      <section id="experience"><Experience /></section>
+      <section id="skills"><Skills /></section>
+      <section id="certifications"><Certifications /></section>
+      <section id="education"><Education /></section>
+      <section id="contact"><Contact /></section>
+    </div>
+  )
+}
 
 function App() {
   const [preloaderDone, setPreloaderDone] = useState(false)
   const [activeSection, setActiveSection] = useState('hero')
   const lenisRef = useRef(null)
+  const location = useLocation()
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   // Lenis smooth scroll
   useEffect(() => {
@@ -39,35 +64,49 @@ function App() {
 
   // Active section tracker
   useEffect(() => {
+    if (!preloaderDone) return
     const sectionIds = ['hero', 'about', 'projects', 'experience', 'skills', 'certifications', 'education', 'contact']
-    const observers = sectionIds.map(id => {
-      const el = document.getElementById(id)
-      if (!el) return null
-      const obs = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveSection(id) },
-        { threshold: 0.4 }
-      )
-      obs.observe(el)
-      return obs
-    })
-    return () => observers.forEach(o => o && o.disconnect())
+    
+    const handleScroll = () => {
+      const center = window.innerHeight / 2
+      let currentId = 'hero'
+
+      for (const id of sectionIds) {
+        const el = document.getElementById(id)
+        if (el) {
+          const rect = el.getBoundingClientRect()
+          // If the middle of the screen is within this element's bounds
+          if (rect.top <= center && rect.bottom >= center) {
+            currentId = id
+            break
+          }
+        }
+      }
+      
+      // Prevent unnecessary state updates
+      setActiveSection((prev) => (prev !== currentId ? currentId : prev))
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    // Initial check
+    handleScroll()
+    
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [preloaderDone])
 
   return (
     <main>
+      <LanguageToggle />
       {!preloaderDone && <Preloader onComplete={() => setPreloaderDone(true)} />}
-
-      <div style={{ opacity: preloaderDone ? 1 : 0, transition: 'opacity 0.8s ease' }}>
-        <ConstellationNav activeSection={activeSection} />
-        <section id="hero"><Hero /></section>
-        <section id="about"><About /></section>
-        <section id="projects"><Projects /></section>
-        <section id="experience"><Experience /></section>
-        <section id="skills"><Skills /></section>
-        <section id="certifications"><Certifications /></section>
-        <section id="education"><Education /></section>
-        <section id="contact"><Contact /></section>
-      </div>
+      
+      <Routes>
+        <Route path="/" element={<Home preloaderDone={preloaderDone} activeSection={activeSection} />} />
+        <Route path="/project/:id" element={
+          <div style={{ opacity: preloaderDone ? 1 : 0, transition: 'opacity 0.8s ease' }}>
+            <ProjectDetail />
+          </div>
+        } />
+      </Routes>
     </main>
   )
 }

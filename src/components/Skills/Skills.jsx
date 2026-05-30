@@ -1,35 +1,21 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
-
-const skillGroups = [
-  { category: 'Core Web', color: '#e8c8ff', skills: ['HTML5', 'CSS3', 'JavaScript ES6+', 'TypeScript'] },
-  { category: 'Frameworks', color: '#b8f5e8', skills: ['React.js', 'Next.js', 'Vue.js', 'Tailwind CSS'] },
-  { category: 'Creative & Animation', color: '#f9b8d4', skills: ['Three.js', 'GSAP', 'Framer Motion', 'Canvas 2D'] },
-  {
-    category: 'Engineering Principle',
-    color: '#f9e0d9',
-    skills: [
-      'Scalable Architecture',
-      'Performance Optimization',
-      'Component-Driven Development',
-      'Clean Code'
-    ]
-  },
-  { category: 'Mobile', color: '#b8f5b0', skills: ['Kotlin', 'Dart'] },
-  { category: 'Design & Tools', color: '#c8b4ff', skills: ['Figma', 'Framer', 'UI/UX', 'Design Systems', 'Prototyping'] },
-  { category: 'Languages', color: '#ffd6a5', skills: ['Indonesian (Native)', 'English (Professional)'] },
-]
-
-const softSkills = ['Mentoring', 'Knowledge Sharing', 'Growth Mindset', 'Problem Solving', 'Fast Learner', 'Cross-functional Collaboration', 'Creative Thinking']
-const allTags = skillGroups.flatMap(g => g.skills.map(s => ({ label: s, color: g.color })))
+import { useLanguage } from '../../context/LanguageContext'
 
 const Skills = () => {
+  const { t, language } = useLanguage()
+  const skillsData = t('skills')
+  const skillGroups = skillsData.groups
+  const softSkills = skillsData.soft
+  const allTags = skillGroups.flatMap(g => g.skills.map(s => ({ label: s, color: g.color })))
+
   const sectionRef = useRef(null)
   const containerRef = useRef(null)
   const tagRefs = useRef([])
   const engineRef = useRef(null)
   const rafRef = useRef(null)
   const resizeRef = useRef(null)
+  const isVisibleRef = useRef(false)
 
   // ── Always init Matter.js (desktop + mobile) ────────────────────────────
   const initMatter = async () => {
@@ -131,6 +117,8 @@ const Skills = () => {
 
     // ── DOM sync loop ─────────────────────────────────────────────────────
     const sync = () => {
+      rafRef.current = requestAnimationFrame(sync)
+      if (!isVisibleRef.current) return
       bodies.forEach((body, i) => {
         const el = tagRefs.current[i]
         if (!el) return
@@ -141,7 +129,6 @@ const Skills = () => {
         el.style.transform = `rotate(${body.angle}rad)`
         el.style.opacity = '1'
       })
-      rafRef.current = requestAnimationFrame(sync)
     }
     sync()
 
@@ -179,7 +166,10 @@ const Skills = () => {
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) initMatter() },
+      ([entry]) => { 
+        isVisibleRef.current = entry.isIntersecting
+        if (entry.isIntersecting) initMatter() 
+      },
       { threshold: 0.05 }
     )
     if (sectionRef.current) observer.observe(sectionRef.current)
@@ -189,9 +179,12 @@ const Skills = () => {
       if (resizeRef.current) window.removeEventListener('resize', resizeRef.current)
       cancelAnimationFrame(rafRef.current)
       if (engineRef.current) {
-        const { Engine } = require('matter-js')
-        Engine.clear(engineRef.current)
-        engineRef.current = null
+        import('matter-js').then(({ Engine }) => {
+          if (engineRef.current) {
+            Engine.clear(engineRef.current)
+            engineRef.current = null
+          }
+        })
       }
     }
   }, [])
@@ -220,11 +213,11 @@ const Skills = () => {
 
       {/* Header */}
       <div className="skills-header">
-        <p className="skills-eyebrow">✦ Skills</p>
+        <p className="skills-eyebrow">{skillsData.eyebrow}</p>
         <h2 className="skills-title">
-          How <span className="skills-gradient">I Work</span>
+          {skillsData.title}<span className="skills-gradient">{skillsData.titleHighlight}</span>
         </h2>
-        <p className="skills-desc">The tools I build with. The habits I bring to every team.</p>
+        <p className="skills-desc">{skillsData.desc}</p>
       </div>
 
       {/* Category Legend */}
@@ -244,7 +237,7 @@ const Skills = () => {
       </div>
 
       {/* Hint for mobile users */}
-      <p className="skills-touch-hint">✦ drag the tags around</p>
+      <p className="skills-touch-hint">{skillsData.touchHint}</p>
 
       {/* Physics container — always absolute positioned tags */}
       <div
@@ -272,7 +265,7 @@ const Skills = () => {
 
       {/* Soft Skills */}
       <div className="skills-soft">
-        <p className="skills-soft-label">✦ Soft Skills</p>
+        <p className="skills-soft-label">{skillsData.softLabel}</p>
         <div className="skills-soft-wrap">
           {softSkills.map((s, i) => (
             <span

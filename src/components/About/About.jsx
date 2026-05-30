@@ -1,29 +1,13 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useLanguage } from '../../context/LanguageContext'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const words = [
-  { text: 'I', highlight: false },
-  { text: 'WRITE', highlight: false },
-  { text: 'CODE', highlight: true },
-  { text: 'THAT', highlight: false },
-  { text: 'THINKS', highlight: true },
-  { text: 'LIKE', highlight: false },
-  { text: 'A', highlight: false },
-  { text: 'DESIGNER.', highlight: true },
-  { text: 'I', highlight: false },
-  { text: 'DESIGN', highlight: false },
-  { text: 'SYSTEMS', highlight: true },
-  { text: 'THAT', highlight: false },
-  { text: 'THINK', highlight: true },
-  { text: 'LIKE', highlight: false },
-  { text: 'AN', highlight: false },
-  { text: 'ENGINEER.', highlight: true },
-]
-
 const About = () => {
+  const { t, language } = useLanguage()
+  const ta = t('about')
   const sectionRef = useRef(null)
   const wordsRef = useRef([])
 
@@ -52,7 +36,7 @@ const About = () => {
     }, sectionRef)
 
     return () => ctx.revert()
-  }, [])
+  }, [language, ta.words])
 
   return (
     <section
@@ -60,11 +44,11 @@ const About = () => {
       className="about-section"
     >
       {/* Small label */}
-      <p className="about-eyebrow">✦ About me</p>
+      <p className="about-eyebrow">{ta.eyebrow}</p>
 
       {/* Big text */}
       <div className="about-words-wrap">
-        {words.map((w, i) => (
+        {ta.words && ta.words.map((w, i) => (
           <span
             key={i}
             ref={el => wordsRef.current[i] = el}
@@ -79,9 +63,7 @@ const About = () => {
       {/* Sub info */}
       <div className="about-sub">
         <p className="about-quote">
-          "I care about the gap between how something looks
-          and how it actually feels to use —
-          that gap is where I live, and I close it with code."
+          {ta.quote}
         </p>
         <p className="about-attribution">- Mayla, 2025</p>
       </div>

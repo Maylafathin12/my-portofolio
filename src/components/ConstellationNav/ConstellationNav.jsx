@@ -1,17 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
-
-const sections = [
-  { id: 'hero', label: 'Home', y: 0 },
-  { id: 'about', label: 'About', y: 1 },
-  { id: 'projects', label: 'Projects', y: 2 },
-  { id: 'experience', label: 'Experience', y: 3 },
-  { id: 'skills', label: 'Skills', y: 4 },
-  { id: 'education', label: 'Education', y: 5 },
-  { id: 'contact', label: 'Contact', y: 6 },
-]
+import { useLanguage } from '../../context/LanguageContext'
 
 const ConstellationNav = ({ activeSection }) => {
+  const { t } = useLanguage()
+  const sections = t('nav')
   const [hovered, setHovered] = useState(null)
   const dotRefs = useRef([])
   const labelRefs = useRef([])

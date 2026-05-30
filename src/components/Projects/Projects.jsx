@@ -4,143 +4,29 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { motion } from 'framer-motion'
 import * as THREE from 'three'
 import { useIsMobile } from '../../hooks/useIsMobile'
-import sehatImg from '../../assets/sehat.png'
-import sahalImg from '../../assets/sahal.png'
-import commandImg from '../../assets/command.png'
-import yumyImg from '../../assets/yumy.png'
-import recycleImg from '../../assets/recycle.png'
+import { projectsData } from '../../data/projectsData'
+import { Link, useNavigate } from 'react-router-dom'
+import { useLanguage } from '../../context/LanguageContext'
 
 gsap.registerPlugin(ScrollTrigger)
-
-const projects = [
-  {
-    number: '01',
-    title: 'EduResearch AI',
-    role: 'Front-End Developer',
-    year: '2026 (May)',
-    desc: 'As the Sole Front-End Engineer, I am crafting the entire visual foundation for an AI-driven research platform specifically for undergraduate students. Currently in development, my focus is on transforming complex AI interactions into a seamless digital experience using React.js and GSAP. I am engineering a modular component architecture and high-performance UI flows—from interactive Title Builders to Methodology Suggesters—ensuring that every step of the thesis journey feels intuitive, responsive, and visually engaging.',
-    tags: ['React.js', 'GSAP', 'AI Integration', 'SaaS'],
-    link: null,
-    isComingSoon: true,
-    glow: '#F3E5F5', 
-    geometry: 'box',
-    previewImage: null,
-  },
-  {
-    number: '02',
-    title: 'Global Educativa.id',
-    role: 'Front-End Developer',
-    year: '2026 (Feb - April)',
-    desc: 'As the sole front-end developer in a lean two-person team, I engineered this international platform from scratch in just one month—slashing the original three-month timeline by 66%. Leveraging Three.js, GSAP, and Framer Motion, I architected an immersive interface tailored for professional academic data analysis. I focused on delivering a premium, high-performance experience for global researchers, ensuring that complex data services are accessible through a seamless and visually stunning UI.',
-    tags: ['React.js', 'Tailwind CSS', 'Responsive', 'Production'],
-    link: 'https://global.educativa.id',
-    glow: '#E1BEE7', // Pale Pastel Purple
-    geometry: 'sphere',
-    previewImage: null,
-  },
-  {
-    number: '03',
-    title: 'Kelas Riset by Educativa',
-    role: 'Front-End Developer — Revamp',
-    year: '2026 (Dec - March)',
-    desc: 'I spearheaded the visual redesign and front-end overhaul of the KelasRiset landing page to enhance user engagement and modernize its digital presence. By implementing a cleaner, more intuitive layout and refining the component architecture, I successfully elevated the platforms visual appeal, receiving significant positive feedback on the improved user experience. The revamp focused on aligning the UI with Educativa’s professional identity while maintaining high-performance standards for over 6,985+ active members.',
-    tags: ['HTML', 'CSS', 'JavaScript', 'UI Revamp'],
-    link: 'https://kelasriset.com',
-    glow: '#CE93D8', // Soft Lilac
-    geometry: 'torus',
-    previewImage: null,
-  },
-  {
-    number: '04',
-    title: 'Command Center Kab. Blora',
-    role: 'Front-End Developer · DINKOMINFO',
-    year: '2024 (Oct - Nov)',
-    desc: 'Real-time operations dashboard built for DINKOMINFO Kabupaten Blora — actively used by local government officials to monitor regional data daily.',
-    tags: ['PHP', 'LARAVEL', 'Dashboard', 'Government', 'Real-time Data'],
-    link: null,
-    glow: '#B39DDB', // Muted Lavender
-    geometry: 'octahedron',
-    previewImage: commandImg,
-    noLinkText: 'Proprietary Software',
-  },
-  {
-    number: '05',
-    title: 'SAHAL',
-    role: 'Web Developer',
-    year: '2024 (Feb - Sept)',
-    desc: 'Serving as the Chief Technology Officer (CTO), I directed the technical strategy and front-end development for SAHAL, an innovative Arabic language learning platform. I oversaw the deployment of a scalable system that successfully acquired and sustained 500+ active students ranging from elementary to high school levels. My focus was on bridging the gap between classical education and modern digital accessibility, ensuring an engaging and seamless learning experience for a diverse age group.',
-    tags: ['WordPress', 'EdTech', '500+ Users', 'SD–SMA'],
-    link: null,
-    glow: '#9F86C0', // Pastel Deep Lavender
-    geometry: 'dodecahedron',
-    previewImage: sahalImg,
-    noLinkText: 'Proprietary Software',
-  },
-  {
-    number: '06',
-    title: 'SEHAT+ App (Mobile)',
-    role: 'Mobile App Developer',
-    year: '2023 (Jan - Nov)',
-    desc: 'AI-powered HIV/AIDS awareness mobile app with integrated chatbot for personalized health advice. Built with Kotlin — won 1st Place National at PKP2 PTMA.',
-    tags: ['Flutter', 'DART', 'AI Chatbot', 'Mobile', '🏆 1st Place National'],
-    link: null,
-    glow: '#6E548E', // Muted Deep Purple
-    geometry: 'icosahedron',
-    previewImage: sehatImg,
-    noLinkText: 'Internal Enterprise System',
-  },
-  {
-    number: '07',
-    title: 'SEHAT+ Landing Page',
-    role: 'Web Developer',
-    year: '2023 (Jan - Nov)',
-    desc: 'Build landing page website for SEHAT+ providing accessibility and information about the mobile ecosystem.',
-    tags: ['HTML5', 'CSS', 'WEBSITE', '🏆 1st Place National'],
-    link: null,
-    glow: '#6E548E', // Deep Pastel Violet
-    geometry: 'icosahedron',
-    previewImage: sehatImg,
-    noLinkText: 'Internal Enterprise System',
-  },
-  {
-    number: '08',
-    title: 'YUMMY Cafe and Resto',
-    role: 'Web Developer',
-    year: '2023 (Jan)',
-    desc: 'Interactive restaurant website with integrated web-based booking system. Awarded Most Favorited Web Champion — recognized for UX quality and user engagement.',
-    tags: ['HTML5', 'CSS', 'Booking System', '🏆 Most Favorited Web'],
-    link: null,
-    glow: '#6E5B9A', // Dusty Purple
-    geometry: 'knot',
-    previewImage: yumyImg,
-    noLinkText: 'Internal Enterprise System',
-  },
-  {
-    number: '09',
-    title: '3Cycle — Recycling Redefined',
-    role: 'Mobile App Developer',
-    year: '2022 (Sept - Oct)',
-    desc: 'Multiplatform waste management app built with Flutter — featuring real-time geospatial mapping and a gamified points system to encourage sustainable habits.',
-    tags: ['Flutter', 'Dart', 'Google Maps API', 'Sustainability'],
-    link: null,
-    glow: '#42326E', // Dark Muted Purple (Paling Gelap)
-    geometry: 'dodecahedron',
-    previewImage: recycleImg,
-    noLinkText: 'Proprietary Software',
-  },
-];
 
 // ─── THREE.JS HOOK ────────────────────────────────────────────────────────────
 const useThreeScene = (canvasRef, geometry, glow, isMobile) => {
   const rafRef = useRef()
+  const isVisibleRef = useRef(false)
 
   useEffect(() => {
     if (isMobile) return
     const canvas = canvasRef.current
     if (!canvas) return
 
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisibleRef.current = entry.isIntersecting
+    }, { threshold: 0 })
+    observer.observe(canvas)
+
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true })
-    renderer.setPixelRatio(window.devicePixelRatio)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
     renderer.setSize(canvas.clientWidth, canvas.clientHeight)
 
     const scene = new THREE.Scene()
@@ -155,28 +41,87 @@ const useThreeScene = (canvasRef, geometry, glow, isMobile) => {
     rim.position.set(-2, -1, 1)
     scene.add(rim)
 
-    let geo
-    if (geometry === 'box') geo = new THREE.BoxGeometry(1.5, 1.5, 1.5)
-    else if (geometry === 'sphere') geo = new THREE.SphereGeometry(1.3, 32, 32)
-    else if (geometry === 'torus') geo = new THREE.TorusGeometry(1.1, 0.38, 24, 60)
-    else if (geometry === 'icosahedron') geo = new THREE.IcosahedronGeometry(1.35, 1)
-    else if (geometry === 'octahedron') geo = new THREE.OctahedronGeometry(1.35, 0)
-    else if (geometry === 'dodecahedron') geo = new THREE.DodecahedronGeometry(1.3, 0)
-    else geo = new THREE.TorusKnotGeometry(0.9, 0.28, 128, 20)
+    const modelGroup = new THREE.Group()
+    scene.add(modelGroup)
 
-    const wireMesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
+    const wireMat = new THREE.MeshBasicMaterial({
       color: new THREE.Color(glow).multiplyScalar(0.22),
       wireframe: true, transparent: true, opacity: 0.6,
-    }))
-    scene.add(wireMesh)
-
-    const solidMesh = new THREE.Mesh(geo, new THREE.MeshPhongMaterial({
+    })
+    const solidMat = new THREE.MeshPhongMaterial({
       color: new THREE.Color('#0d0820'),
       emissive: new THREE.Color(glow).multiplyScalar(0.07),
       transparent: true, opacity: 0.75, shininess: 90,
-    }))
-    solidMesh.scale.setScalar(0.96)
-    scene.add(solidMesh)
+    })
+
+    const addPart = (geo, scale = 1, pos = [0,0,0], rot = [0,0,0]) => {
+      const w = new THREE.Mesh(geo, wireMat)
+      const s = new THREE.Mesh(geo, solidMat)
+      w.scale.setScalar(scale)
+      s.scale.setScalar(scale * 0.96)
+      w.position.set(...pos)
+      s.position.set(...pos)
+      w.rotation.set(...rot)
+      s.rotation.set(...rot)
+      modelGroup.add(w, s)
+    }
+
+    if (geometry === 'jar') {
+      addPart(new THREE.CylinderGeometry(0.8, 0.8, 1.4, 32))
+      addPart(new THREE.CylinderGeometry(0.6, 0.8, 0.3, 32), 1, [0, 0.85, 0])
+      addPart(new THREE.CylinderGeometry(0.65, 0.65, 0.15, 32), 1, [0, 1.075, 0])
+    } else if (geometry === 'frame') {
+      addPart(new THREE.BoxGeometry(1.6, 0.2, 0.1), 1, [0, 1.0, 0])
+      addPart(new THREE.BoxGeometry(1.6, 0.6, 0.1), 1, [0, -0.8, 0])
+      addPart(new THREE.BoxGeometry(0.2, 1.6, 0.1), 1, [-0.7, 0.1, 0])
+      addPart(new THREE.BoxGeometry(0.2, 1.6, 0.1), 1, [0.7, 0.1, 0])
+    } else if (geometry === 'magnifier') {
+      addPart(new THREE.TorusGeometry(0.7, 0.15, 16, 48), 1, [0, 0.5, 0])
+      addPart(new THREE.CylinderGeometry(0.12, 0.12, 1.4, 16), 1, [0, -0.8, 0])
+    } else if (geometry === 'dashboard') {
+      addPart(new THREE.BoxGeometry(2.4, 1.6, 0.1))
+      addPart(new THREE.BoxGeometry(2.4, 0.2, 0.12), 1, [0, 0.7, 0.02])
+      addPart(new THREE.SphereGeometry(0.04), 1, [-1.0, 0.7, 0.1])
+      addPart(new THREE.SphereGeometry(0.04), 1, [-0.85, 0.7, 0.1])
+      addPart(new THREE.SphereGeometry(0.04), 1, [-0.7, 0.7, 0.1])
+    } else if (geometry === 'chart') {
+      addPart(new THREE.BoxGeometry(2.2, 0.1, 1.2), 1, [0, -0.8, 0])
+      addPart(new THREE.BoxGeometry(0.4, 1.2, 0.4), 1, [-0.6, -0.15, 0])
+      addPart(new THREE.BoxGeometry(0.4, 0.6, 0.4), 1, [0, -0.45, 0])
+      addPart(new THREE.BoxGeometry(0.4, 1.8, 0.4), 1, [0.6, 0.15, 0])
+    } else if (geometry === 'phone') {
+      addPart(new THREE.BoxGeometry(1.0, 2.0, 0.15))
+      addPart(new THREE.BoxGeometry(0.9, 1.8, 0.16), 1, [0, 0, 0.01])
+      addPart(new THREE.BoxGeometry(0.3, 0.3, 0.17), 1, [-0.2, 0.7, -0.02])
+    } else if (geometry === 'robot') {
+      addPart(new THREE.BoxGeometry(1.2, 1.0, 1.0))
+      addPart(new THREE.BoxGeometry(0.3, 0.2, 0.1), 1, [-0.3, 0.1, 0.51])
+      addPart(new THREE.BoxGeometry(0.3, 0.2, 0.1), 1, [0.3, 0.1, 0.51])
+      addPart(new THREE.CylinderGeometry(0.05, 0.05, 0.4), 1, [0, 0.6, 0])
+      addPart(new THREE.SphereGeometry(0.15), 1, [0, 0.8, 0])
+      addPart(new THREE.CylinderGeometry(0.2, 0.2, 0.2), 1, [-0.65, 0, 0], [0, 0, Math.PI/2])
+      addPart(new THREE.CylinderGeometry(0.2, 0.2, 0.2), 1, [0.65, 0, 0], [0, 0, Math.PI/2])
+    } else if (geometry === 'trashcan') {
+      addPart(new THREE.CylinderGeometry(0.6, 0.5, 1.6, 24))
+      addPart(new THREE.CylinderGeometry(0.65, 0.65, 0.1, 24), 1, [0, 0.85, 0])
+      addPart(new THREE.TorusGeometry(0.15, 0.05, 8, 16), 1, [0, 0.95, 0], [Math.PI/2, 0, 0])
+      addPart(new THREE.TorusGeometry(0.58, 0.04, 8, 24), 1, [0, 0.4, 0], [Math.PI/2, 0, 0])
+      addPart(new THREE.TorusGeometry(0.54, 0.04, 8, 24), 1, [0, -0.4, 0], [Math.PI/2, 0, 0])
+    } else if (geometry === 'box') {
+      addPart(new THREE.BoxGeometry(1.5, 1.5, 1.5))
+    } else if (geometry === 'sphere') {
+      addPart(new THREE.SphereGeometry(1.3, 32, 32))
+    } else if (geometry === 'torus') {
+      addPart(new THREE.TorusGeometry(1.1, 0.38, 24, 60))
+    } else if (geometry === 'icosahedron') {
+      addPart(new THREE.IcosahedronGeometry(1.35, 1))
+    } else if (geometry === 'octahedron') {
+      addPart(new THREE.OctahedronGeometry(1.35, 0))
+    } else if (geometry === 'dodecahedron') {
+      addPart(new THREE.DodecahedronGeometry(1.3, 0))
+    } else {
+      addPart(new THREE.TorusKnotGeometry(0.9, 0.28, 128, 20))
+    }
 
     const pN = 220
     const pPos = new Float32Array(pN * 3)
@@ -203,30 +148,34 @@ const useThreeScene = (canvasRef, geometry, glow, isMobile) => {
 
     let t = 0
     const loop = () => {
-      t += 0.006
-      wireMesh.rotation.y = t * 0.35
-      wireMesh.rotation.x = t * 0.18
-      solidMesh.rotation.y = t * 0.35
-      solidMesh.rotation.x = t * 0.18
-      wireMesh.position.y = Math.sin(t * 0.7) * 0.09
-      solidMesh.position.y = Math.sin(t * 0.7) * 0.09
-      renderer.render(scene, camera)
       rafRef.current = requestAnimationFrame(loop)
+      if (!isVisibleRef.current) return
+
+      t += 0.006
+      modelGroup.rotation.y = t * 0.35
+      modelGroup.rotation.x = t * 0.18
+      modelGroup.position.y = Math.sin(t * 0.7) * 0.09
+      renderer.render(scene, camera)
     }
     loop()
 
     return () => {
       cancelAnimationFrame(rafRef.current)
+      observer.disconnect()
       window.removeEventListener('resize', resize)
       renderer.dispose()
       pGeo.dispose()
-      geo.dispose()
+      modelGroup.children.forEach(c => {
+        if (c.geometry) c.geometry.dispose()
+      })
     }
   }, [geometry, glow, isMobile])
 }
 
 // ─── CARD ─────────────────────────────────────────────────────────────────────
 const Card = React.forwardRef(({ project }, ref) => {
+  const { t } = useLanguage()
+  const tp = t('projects')
   const canvasRef = useRef(null)
   const isMobile = useIsMobile(900)
   useThreeScene(canvasRef, project.geometry, project.glow, isMobile)
@@ -254,7 +203,7 @@ const Card = React.forwardRef(({ project }, ref) => {
       <div className="pc-topbar">
         <span className="pc-idx">{project.number}</span>
         <div className="pc-topbar-line" />
-        {project.isComingSoon && <span className="pc-badge">COMING SOON</span>}
+        {project.isComingSoon && <span className="pc-badge">{tp.comingSoon}</span>}
         <span className="pc-yr">{project.year}</span>
       </div>
 
@@ -312,18 +261,9 @@ const Card = React.forwardRef(({ project }, ref) => {
           </div>
 
           {/* ─── CTA AREA ─────────────────────────────────────────────── */}
-          {project.isComingSoon ? (
-            // Coming soon badge
-            <div className="pc-no-link">
-              Development in Progress
-            </div>
-
-          ) : project.link ? (
-            // Ada live link — tombol View Live
-            <a
-              href={project.link}
-              target="_blank"
-              rel="noopener noreferrer"
+          <div className="pc-preview-wrapper" style={{ position: 'relative', display: 'inline-block' }}>
+            <Link
+              to={`/project/${project.id}`}
               style={{
                 fontFamily: 'DM Sans, sans-serif',
                 fontSize: '10px',
@@ -331,85 +271,18 @@ const Card = React.forwardRef(({ project }, ref) => {
                 border: `1px solid ${project.glow}55`,
                 borderRadius: '99px',
                 color: project.glow,
+                cursor: 'pointer',
                 letterSpacing: '0.08em',
                 textDecoration: 'none',
-                display: 'inline-block',
-                width: 'fit-content',
                 transition: 'background 0.2s ease, border-color 0.2s ease',
+                display: 'inline-block'
               }}
               onMouseEnter={e => e.currentTarget.style.background = `${project.glow}15`}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
-              View Live
-            </a>
-
-          ) : (
-            // Tidak ada link — tampilkan "Not publicly deployed" + tombol Preview jika ada gambar
-            <div className="pc-preview-wrapper" style={{ position: 'relative', display: 'inline-block' }}>
-
-              {/* Popup preview muncul di atas tombol */}
-              {project.previewImage && (
-                <div className="pc-preview-popup"
-                  style={{
-                    position: 'absolute',
-                    bottom: 'calc(100% + 12px)',
-                    left: '0',
-                    width: '280px',
-                    borderRadius: '12px',
-                    overflow: 'hidden',
-                    zIndex: 9999,
-                    boxShadow: '0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.08)',
-                  }}
-                >
-                  <img
-                    src={project.previewImage}
-                    alt={project.title}
-                    style={{ width: '100%', display: 'block' }}
-                  />
-                  <div style={{
-                    padding: '8px 12px',
-                    background: 'rgba(7,5,15,0.95)',
-                    backdropFilter: 'blur(8px)',
-                    fontSize: '10px',
-                    color: 'rgba(255,255,255,0.4)',
-                    letterSpacing: '0.08em',
-                    fontFamily: 'DM Sans, sans-serif',
-                  }}>
-                    {project.title} · Screenshot Preview
-                  </div>
-                </div>
-              )}
-
-              {/* Row: teks + tombol Preview */}
-              <div
-                style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
-              >
-                <span className="pc-no-link">{project.noLinkText || 'Internal Enterprise System'}</span>
-
-                {/* Tombol Preview — hanya muncul kalau ada gambar */}
-                {project.previewImage && (
-                  <span
-                    className="pc-preview-hover-target"
-                    style={{
-                      fontFamily: 'DM Sans, sans-serif',
-                      fontSize: '10px',
-                      padding: '4px 12px',
-                      border: `1px solid ${project.glow}55`,
-                      borderRadius: '99px',
-                      color: project.glow,
-                      cursor: 'pointer',
-                      letterSpacing: '0.08em',
-                      transition: 'background 0.2s ease, border-color 0.2s ease',
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.background = `${project.glow}15`}
-                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                  >
-                    Preview ↗
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
+              {tp.readCaseStudy}
+            </Link>
+          </div>
           {/* ─── END CTA AREA ─────────────────────────────────────────── */}
         </div>
       </div>
@@ -421,6 +294,9 @@ const Card = React.forwardRef(({ project }, ref) => {
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 const Projects = () => {
+  const { language, t } = useLanguage()
+  const tp = t('projects')
+  const projects = projectsData[language]
   const isMobile = useIsMobile(900)
   const [activePreviewMobile, setActivePreviewMobile] = useState(null)
   const wrapperRef = useRef(null)
@@ -460,7 +336,7 @@ const Projects = () => {
           anticipatePin: 1,
           onUpdate: (self) => {
             const progress = self.progress
-            const idx = Math.min(Math.floor(progress * total), total - 1)
+            const idx = Math.round(progress * (total - 1))
 
             if (counterRef.current) counterRef.current.innerText = `0${idx + 1}`
             if (progressFillRef.current) progressFillRef.current.style.width = `${progress * 100}%`
@@ -468,6 +344,12 @@ const Projects = () => {
             dots.forEach((dot, di) => {
               if (di === idx) dot.classList.add('active')
               else dot.classList.remove('active')
+            })
+
+            cards.forEach((card, ci) => {
+              if (card) {
+                card.style.pointerEvents = ci === idx ? 'auto' : 'none'
+              }
             })
           },
         },
@@ -483,13 +365,12 @@ const Projects = () => {
           scale: 0.94,
           rotateX: 12,
           filter: 'blur(10px)',
-          pointerEvents: 'none',
           duration: 1,
         }, i)
 
         tl.fromTo(next,
           { opacity: 0, y: 100, scale: 0.92, filter: 'blur(15px)' },
-          { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', pointerEvents: 'auto', duration: 1 },
+          { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 1 },
           i
         )
       })
@@ -503,9 +384,9 @@ const Projects = () => {
     return (
       <div className="w-full bg-[#07050f] py-20 px-6 overflow-hidden">
         <div className="mb-12">
-          <p className="font-['DM_Sans'] text-[10px] tracking-[0.3em] uppercase text-[#e8c8ff]/80 mb-3">✦ Selected Works</p>
+          <p className="font-['DM_Sans'] text-[10px] tracking-[0.3em] uppercase text-[#e8c8ff]/80 mb-3">{tp.selectedWorks}</p>
           <h2 className="font-['Clash_Display'] text-[38px] font-bold text-white tracking-tight leading-[1.1]">
-            Featured <br /><span className="bg-gradient-to-br from-[#e8c8ff] to-[#f9b8d4] bg-clip-text text-transparent">Projects</span>
+            {tp.featured} <br /><span className="bg-gradient-to-br from-[#e8c8ff] to-[#f9b8d4] bg-clip-text text-transparent">{tp.projects}</span>
           </h2>
         </div>
 
@@ -560,46 +441,10 @@ const Projects = () => {
                 <div className="mt-auto relative z-10 pt-4 border-t border-white/5 flex items-center justify-between">
                   <span className="font-['DM_Sans'] text-[10px] tracking-wider text-white/30">{project.year.split(' ')[0]}</span>
 
-                  {project.isComingSoon ? (
-                    <span className="font-['DM_Sans'] text-[10px] italic text-[#f9b8d4]/60 tracking-wider">In Development</span>
-                  ) : project.link ? (
-                    <a href={project.link} target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center font-['DM_Sans'] text-[10px] font-medium tracking-[0.1em] uppercase px-5 py-2.5 rounded-full border border-[#e8c8ff]/30 text-[#e8c8ff] hover:bg-[#e8c8ff]/10 transition-colors">
-                      View Live ↗
-                    </a>
-                  ) : (
-                    <div className="flex items-center gap-3">
-                      <span className="font-['DM_Sans'] text-[10px] italic text-white/30 tracking-wider">
-                        {project.noLinkText || 'Internal Enterprise System'}
-                      </span>
-                      {project.previewImage && (
-                        <div className="relative">
-                          <button
-                            onClick={() => setActivePreviewMobile(activePreviewMobile === i ? null : i)}
-                            className="inline-flex items-center font-['DM_Sans'] text-[9px] tracking-[0.1em] uppercase px-3 py-1.5 rounded-full border border-white/20 text-white/70 active:bg-white/10 transition-colors"
-                          >
-                            Preview ↗
-                          </button>
-
-                          {/* Popup Preview */}
-                          <div
-                            className="absolute bottom-[calc(100%+12px)] right-0 w-[220px] rounded-xl overflow-hidden shadow-2xl pointer-events-none transition-all duration-300 origin-bottom-right"
-                            style={{
-                              opacity: activePreviewMobile === i ? 1 : 0,
-                              transform: activePreviewMobile === i ? 'scale(1) translateY(0)' : 'scale(0.95) translateY(10px)',
-                              zIndex: 50,
-                              border: '1px solid rgba(255,255,255,0.08)'
-                            }}
-                          >
-                            <img src={project.previewImage} alt={project.title} className="w-full block" />
-                            <div className="p-2 bg-[#07050f]/95 backdrop-blur-md text-[9px] text-white/40 tracking-wider font-['DM_Sans'] border-t border-white/10">
-                              {project.title}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                  <Link to={`/project/${project.id}`}
+                    className="inline-flex items-center font-['DM_Sans'] text-[10px] font-medium tracking-[0.1em] uppercase px-5 py-2.5 rounded-full border border-[#e8c8ff]/30 text-[#e8c8ff] hover:bg-[#e8c8ff]/10 transition-colors">
+                    {tp.readCaseStudy}
+                  </Link>
                 </div>
               </motion.div>
             )
@@ -617,8 +462,8 @@ const Projects = () => {
         {/* Header Section */}
         <div ref={headerRef} className="projects-header">
           <div className="ph-left">
-            <p className="ph-eyebrow" style={{ color: 'rgba(232,200,255,0.8)' }}>✦ Selected Works</p>
-            <h2 className="ph-title">Featured <span className="gradient-text">Projects</span></h2>
+            <p className="ph-eyebrow" style={{ color: 'rgba(232,200,255,0.8)' }}>{tp.selectedWorks}</p>
+            <h2 className="ph-title">{tp.featured} <span className="gradient-text">{tp.projects}</span></h2>
           </div>
           <div className="ph-right">
             <div className="ph-counter">
@@ -649,6 +494,16 @@ const Projects = () => {
             <div
               key={i}
               ref={el => dotRefs.current[i] = el}
+              onClick={() => {
+                const st = ScrollTrigger.getAll().find(t => t.trigger === wrapperRef.current)
+                if (st) {
+                  const start = st.start
+                  const end = st.end
+                  const progress = i / (projects.length - 1)
+                  const targetScroll = start + (end - start) * progress
+                  window.scrollTo({ top: targetScroll, behavior: 'smooth' })
+                }
+              }}
               className={`nav-dot ${i === 0 ? 'active' : ''}`}
             />
           ))}

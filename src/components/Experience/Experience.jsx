@@ -1,76 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
-
-const experiences = [
-  {
-    id: 0,
-    year: '2025',
-    title: 'Front-End Developer Intern',
-    company: 'Educativa.id',
-    period: 'Nov 2025 – Present',
-    color: '#2d1a5e',
-    glow: '#e8c8ff',
-    ring: true,
-    bullets: [
-      'As a Front-End Intern, I engineered the global.educativa.id platform from scratch—slashing the production timeline by 66%. I also spearheaded the KelasRiset visual overhaul, earning "Best Mentor" and "Most Growth Mindset" awards for my technical excellence and proactive contributions.',
-    ],
-  },
-  {
-    id: 1,
-    year: '2025',
-    title: 'Growth Engineer Intern',
-    company: 'Dicoding Indonesia',
-    period: 'April - June 2025',
-    color: '#3d1a3a',
-    glow: '#f9b8d4',
-    ring: false,
-    bullets: [
-      'As a Growth Engineer Intern, I launched the Dicoding DevCommunity Support 2025, a nationwide program to scale Indonesian tech communities. I successfully architected the collaboration framework and managed a growing network of 200+ active members.',
-    ],
-  },
-  {
-    id: 2,
-    year: '2024',
-    title: 'Front-End Developer Intern',
-    company: 'DINKOMINFO Blora',
-    period: 'Oct - Nov 2024',
-    color: '#1a1040',
-    glow: '#c8b4ff',
-    ring: true,
-    bullets: [
-      'As a Front-End Intern, I built the official Command Center Kabupaten Blora, a real-time operations dashboard for government officials. I focused on translating complex data into high-performance, responsive layouts for daily regional monitoring.',
-    ],
-  },
-  {
-    id: 3,
-    year: '2024',
-    title: 'CTO & Lead Developer',
-    company: 'SAHAL – P2MW',
-    period: 'Feb – Sep 2024',
-    color: '#3a1569',
-    glow: '#d4b8ff',
-    ring: true,
-    bullets: [
-      'Serving as CTO and Lead Developer, I acted as the sole technical decision-maker and architect for the entire platform. I directed the end-to-end development and system integration that successfully supported over 500 active students.',
-    ],
-  },
-  {
-    id: 4,
-    year: '2024',
-    title: 'Teaching Assistant',
-    company: 'STQA – UMY',
-    period: '2024',
-    color: '#4e1235',
-    glow: '#f0d4ff',
-    ring: false,
-    bullets: [
-      'Delivered STQA coursework to undergrads',
-      'Testing methodologies and best practices',
-    ],
-  },
-]
-
-const N = experiences.length
+import { useLanguage } from '../../context/LanguageContext'
 
 // Responsive SIZE based on viewport
 const getSize = () => {
@@ -81,6 +11,11 @@ const getSize = () => {
 }
 
 const Experience = () => {
+  const { t, language } = useLanguage()
+  const expData = t('experience')
+  const experiences = expData.list
+  const N = experiences.length
+
   const wrapperRef = useRef(null)
   const bgCanvasRef = useRef(null)
   const ringRefs = useRef([])
@@ -88,6 +23,7 @@ const Experience = () => {
   const [activeIdx, setActiveIdx] = useState(0)
   const [SIZE, setSIZE] = useState(getSize)
   const activeIdxRef = useRef(0)
+  const isVisibleRef = useRef(false)
 
   // Update SIZE on resize
   useEffect(() => {
@@ -98,6 +34,11 @@ const Experience = () => {
 
   // ── Starfield ──────────────────────────────────────────────
   useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisibleRef.current = entry.isIntersecting
+    }, { threshold: 0 })
+    if (wrapperRef.current) observer.observe(wrapperRef.current)
+
     const canvas = bgCanvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
@@ -115,6 +56,8 @@ const Experience = () => {
     const shooters = []
     let raf
     const draw = () => {
+      raf = requestAnimationFrame(draw)
+      if (!isVisibleRef.current) return
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       if (Math.random() < 0.004) shooters.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height * 0.5, vx: 6 + Math.random() * 8, vy: 2 + Math.random() * 4, life: 1 })
       stars.forEach(s => {
@@ -131,10 +74,13 @@ const Experience = () => {
         ctx.beginPath(); ctx.moveTo(sh.x - sh.vx * 6, sh.y - sh.vy * 6); ctx.lineTo(sh.x, sh.y)
         ctx.strokeStyle = g; ctx.lineWidth = 1.5; ctx.stroke()
       })
-      raf = requestAnimationFrame(draw)
     }
     draw()
-    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize) }
+    return () => { 
+      cancelAnimationFrame(raf); 
+      window.removeEventListener('resize', resize) 
+      observer.disconnect()
+    }
   }, [])
 
   // ── Ring + orbit spin ──────────────────────────────────────
@@ -144,29 +90,16 @@ const Experience = () => {
   }, [])
 
   // ── STICKY SCROLL DRIVER ──────────────────────────────────
-  useEffect(() => {
-    const onScroll = () => {
-      const wrapper = wrapperRef.current
-      if (!wrapper) return
-      const wTop = wrapper.getBoundingClientRect().top
-      const scrolledInside = -wTop
-      const next = Math.min(N - 1, Math.max(0, Math.round(scrolledInside / window.innerHeight)))
-      if (next === activeIdxRef.current) return
-      const prev = activeIdxRef.current
-      activeIdxRef.current = next
-      setActiveIdx(next)
-      animatePlanets(prev, next)
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
   const animatePlanets = (prev, curr) => {
     const direction = curr > prev ? 1 : -1
     experiences.forEach((_, i) => {
       const el = document.getElementById('xp-planet-' + i)
       const info = document.getElementById('xp-info-' + i)
       if (!el || !info) return
+
+      // Kill any running tweens to prevent overlapping animations
+      gsap.killTweensOf([el, info])
+
       if (i === curr) {
         gsap.fromTo(el,
           { x: direction * window.innerWidth * 0.7, scale: 0.25, opacity: 0, rotationY: direction * 40 },
@@ -185,6 +118,40 @@ const Experience = () => {
       }
     })
   }
+
+  useEffect(() => {
+    const onScroll = () => {
+      const wrapper = wrapperRef.current
+      if (!wrapper) return
+      const wTop = wrapper.getBoundingClientRect().top
+      const scrolledInside = -wTop
+      const next = Math.min(N - 1, Math.max(0, Math.round(scrolledInside / window.innerHeight)))
+      if (next === activeIdxRef.current) return
+      const prev = activeIdxRef.current
+      activeIdxRef.current = next
+      setActiveIdx(next)
+      animatePlanets(prev, next)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [N])
+
+  // Initialize GSAP styles on mount
+  useLayoutEffect(() => {
+    experiences.forEach((_, i) => {
+      const el = document.getElementById('xp-planet-' + i)
+      const info = document.getElementById('xp-info-' + i)
+      if (!el || !info) return
+
+      if (i === activeIdxRef.current) {
+        gsap.set(el, { x: 0, scale: 1, opacity: 1, rotationY: 0 })
+        gsap.set(info, { y: 0, opacity: 1, filter: 'blur(0px)' })
+      } else {
+        gsap.set(el, { x: window.innerWidth, scale: 0.25, opacity: 0, rotationY: 0 })
+        gsap.set(info, { opacity: 0 })
+      }
+    })
+  }, [experiences.length])
 
   const scrollToSlide = (i) => {
     const wrapper = wrapperRef.current
@@ -207,8 +174,8 @@ const Experience = () => {
 
         {/* Header */}
         <div className="xp-header">
-          <p className="xp-eyebrow">✦ The Professional Odyssey</p>
-          <p className="xp-subtitle">A timeline of building products, leading teams, and scaling international platforms.</p>
+          <p className="xp-eyebrow">{expData.eyebrow}</p>
+          <p className="xp-subtitle">{expData.subtitle}</p>
         </div>
 
         {/* Counter */}
@@ -232,7 +199,7 @@ const Experience = () => {
                 {/* Planet */}
                 <div
                   id={'xp-planet-' + i}
-                  style={{ position: 'relative', width: svgSize, height: svgSize, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: i === 0 ? 1 : 0, transform: i === 0 ? 'translateX(0) scale(1)' : 'translateX(100vw) scale(0.25)' }}
+                  style={{ position: 'relative', width: svgSize, height: svgSize, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0 }}
                 >
                   <div style={{ position: 'absolute', width: SIZE * 1.5, height: SIZE * 1.5, borderRadius: '50%', border: `1px solid ${exp.glow}18`, animation: 'ripple1 3.5s ease-out infinite', pointerEvents: 'none' }} />
                   <div style={{ position: 'absolute', width: SIZE * 1.8, height: SIZE * 1.8, borderRadius: '50%', border: `1px solid ${exp.glow}0c`, animation: 'ripple1 3.5s ease-out infinite 0.8s', pointerEvents: 'none' }} />
@@ -282,7 +249,7 @@ const Experience = () => {
                 </div>
 
                 {/* Info */}
-                <div id={'xp-info-' + i} style={{ textAlign: 'center', maxWidth: 'min(440px, 88vw)', opacity: i === 0 ? 1 : 0, marginTop: `calc(-${SIZE * 0.08}px + 1.2rem)`, padding: '0 1.5rem' }}>
+                <div id={'xp-info-' + i} style={{ textAlign: 'center', maxWidth: 'min(440px, 88vw)', opacity: 0, marginTop: `calc(-${SIZE * 0.08}px + 1.2rem)`, padding: '0 1.5rem' }}>
                   <div style={{ width: 40, height: 1, background: `linear-gradient(90deg, transparent, ${exp.glow}40, transparent)`, margin: '0 auto 0.85rem' }} />
                   <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: exp.glow, opacity: 0.8, margin: '0 0 0.75rem' }}>{exp.period}</p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
@@ -312,7 +279,7 @@ const Experience = () => {
 
         {/* Scroll hint */}
         <div className="xp-scroll-hint">
-          <span style={{ fontFamily: 'DM Sans', fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#fff' }}>{activeIdx < N - 1 ? 'scroll' : 'continue'}</span>
+          <span style={{ fontFamily: 'DM Sans', fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#fff' }}>{activeIdx < N - 1 ? expData.scroll : expData.continue}</span>
           <div style={{ width: 24, height: 1, background: 'rgba(232,200,255,0.5)' }} />
         </div>
 

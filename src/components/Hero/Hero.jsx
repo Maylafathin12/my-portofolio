@@ -2,8 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import maylaPhoto from '../../assets/may.png'
 import { useIsMobile } from '../../hooks/useIsMobile'
+import { useLanguage } from '../../context/LanguageContext'
 
 const Hero = () => {
+  const { t } = useLanguage()
+  const th = t('hero')
   const sectionRef = useRef(null)
   const figureRef = useRef(null)
   const canvasRef = useRef(null)
@@ -14,8 +17,17 @@ const Hero = () => {
   const badgeRef = useRef(null)
   const gridRef = useRef(null)
   const rafRef = useRef(null)
+  const isVisibleRef = useRef(false)
   const isMobile = useIsMobile(768)
   const [showBanner, setShowBanner] = useState(true)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisibleRef.current = entry.isIntersecting
+    }, { threshold: 0 })
+    if (sectionRef.current) observer.observe(sectionRef.current)
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -35,6 +47,8 @@ const Hero = () => {
       }))
 
       const drawParticles = () => {
+        rafRef.current = requestAnimationFrame(drawParticles)
+        if (!isVisibleRef.current) return
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         particles.forEach(p => {
           ctx.beginPath()
@@ -45,7 +59,6 @@ const Hero = () => {
           p.x += p.drift
           if (p.y < -5) { p.y = canvas.height + 5; p.x = Math.random() * canvas.width }
         })
-        rafRef.current = requestAnimationFrame(drawParticles)
       }
       drawParticles()
     }
@@ -134,7 +147,7 @@ const Hero = () => {
             userSelect: 'none',
           }}
         >
-          <span>💻 Switch to desktop for the full experience</span>
+          <span>{th.mobileBanner}</span>
           <span style={{ opacity: 0.5, fontSize: '12px' }}>✕</span>
         </div>
       )}
@@ -167,21 +180,21 @@ const Hero = () => {
         {/* ── LEFT INFO ── */}
         <div ref={leftInfoRef} className="hero-left-info">
           <div className="hero-stat">
-            <p className="hero-stat-label">Project Experience</p>
+            <p className="hero-stat-label">{th.projectExp}</p>
             <p className="hero-stat-num">3+</p>
-            <p className="hero-stat-sub">years building</p>
+            <p className="hero-stat-sub">{th.yearsBuilding}</p>
           </div>
           <div className="hero-divider-v" />
           <div className="hero-stat">
-            <p className="hero-stat-label">Awards</p>
+            <p className="hero-stat-label">{th.awards}</p>
             <p className="hero-stat-num">6✦</p>
-            <p className="hero-stat-sub">national wins</p>
+            <p className="hero-stat-sub">{th.nationalWins}</p>
           </div>
           <div className="hero-divider-v" />
           <div className="hero-stat">
-            <p className="hero-stat-label">Based in</p>
+            <p className="hero-stat-label">{th.basedIn}</p>
             <p className="hero-stat-loc">Yogyakarta</p>
-            <p className="hero-stat-sub">Indonesia 🇮🇩</p>
+            <p className="hero-stat-sub">{th.indonesia}</p>
           </div>
         </div>
 
@@ -200,7 +213,7 @@ const Hero = () => {
           <div className="hero-text-wrap">
             <div ref={badgeRef} className="hero-badge">
               <span className="hero-badge-dot" />
-              Available for full-time opportunities
+              {th.available}
             </div>
 
             <h1 ref={nameRef} className="hero-name">
@@ -209,9 +222,9 @@ const Hero = () => {
             </h1>
 
             <div ref={roleRef} className="hero-role">
-              <span>Design Engineer</span>
+              <span>{th.role1}</span>
               <span className="hero-role-dot" />
-              <span>Frontend Engineer</span>
+              <span>{th.role2}</span>
             </div>
           </div>
         </div>
@@ -219,11 +232,11 @@ const Hero = () => {
         {/* ── RIGHT INFO ── */}
         <div ref={rightInfoRef} className="hero-right-info">
           {[
-            { label: 'Core Stack', value: 'React · Next.js · Vue' },
-            { label: 'CREATIVE & 3D', value: 'Three.js · GSAP · Framer-Motion' },
-            { label: 'Mobile', value: 'Flutter · Kotlin' },
-            { label: 'Design & Tools', value: 'Figma · UI/UX' },
-            { label: 'Available now —', value: 'ready to ship on day one' },
+            { label: th.coreStack, value: 'React · Next.js · Vue' },
+            { label: th.creative3D, value: 'Three.js · GSAP · Framer-Motion' },
+            { label: th.mobile, value: 'Flutter · Kotlin' },
+            { label: th.designTools, value: 'Figma · UI/UX' },
+            { label: th.readyToShip, value: th.readyToShipSub },
           ].map((item, i) => (
             <div key={i} className="hero-right-item">
               <p className="hero-right-label">{item.label}</p>
@@ -237,7 +250,7 @@ const Hero = () => {
       <div className="hero-bottom-area">
         {/* Scroll hint - kiri bawah, nggak bentrok sama nama */}
         <div className="hero-scroll-hint">
-          <span className="hero-scroll-text">scroll to explore</span>
+          <span className="hero-scroll-text">{th.scrollToExplore}</span>
           <div className="hero-scroll-line" />
         </div>
 
@@ -246,7 +259,7 @@ const Hero = () => {
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
             <path d="M6 1v7M3 5l3 3 3-3M1 10h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          Get My Resume
+          {th.getResume}
         </a>
       </div>
 

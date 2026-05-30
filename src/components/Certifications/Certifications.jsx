@@ -1,43 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import gsap from 'gsap'
-
-const achievements = [
-  { id: 'a0', name: 'Best Mentor — UI/UX & Front-End', org: 'Educativa.id', year: '2026', x: 15, y: 18 },
-  { id: 'a1', name: 'Most Growth Mindset', org: 'Educativa.id', year: '2026', x: 30, y: 12 },
-  { id: 'a2', name: '1st Place National — PKP2 PTMA (SEHAT+ App)', org: 'PKM Karsa Cipta', year: '2023', x: 50, y: 16 },
-  { id: 'a3', name: '1st Place National — PKP2 PTMA (SEHAT Website)', org: 'PKM Karsa Cipta', year: '2023', x: 68, y: 11 },
-  { id: 'a4', name: 'Most Favorited Web Champion — YUMMY', org: 'Web Competition', year: '2023', x: 82, y: 18 },
-  { id: 'a5', name: 'Bangkit Academy Graduate', org: 'Google, GoTo & Traveloka', year: '2024', x: 45, y: 8 },
-]
-
-const achievementConnections = [[0, 1], [1, 2], [2, 3], [3, 4], [1, 5], [5, 2], [0, 5]]
-
-const courses = [
-  { id: 0, name: 'Belajar Dasar Pemrograman Web', level: 'Dasar', hours: 45, category: 'frontend', link: 'https://www.dicoding.com/academies/123', x: 12, y: 45 },
-  { id: 1, name: 'Belajar Membuat Front-End Web untuk Pemula', level: 'Pemula', hours: 45, category: 'frontend', link: 'https://www.dicoding.com/academies/315', x: 22, y: 38 },
-  { id: 2, name: 'Belajar Dasar Pemrograman JavaScript', level: 'Dasar', hours: 46, category: 'frontend', link: 'https://www.dicoding.com/academies/256', x: 32, y: 45 },
-  { id: 3, name: 'Belajar Back-End Pemula dengan JavaScript', level: 'Pemula', hours: 50, category: 'frontend', link: 'https://www.dicoding.com/academies/261', x: 42, y: 38 },
-  { id: 4, name: 'Belajar Prinsip Pemrograman SOLID', level: 'Menengah', hours: 15, category: 'frontend', link: 'https://www.dicoding.com/academies/169', x: 52, y: 44 },
-  { id: 5, name: 'Memulai Pemrograman dengan Kotlin', level: 'Dasar', hours: 50, category: 'mobile', link: 'https://www.dicoding.com/academies/80', x: 14, y: 62 },
-  { id: 6, name: 'Belajar Membuat Aplikasi Android untuk Pemula', level: 'Pemula', hours: 60, category: 'mobile', link: 'https://www.dicoding.com/academies/51', x: 24, y: 70 },
-  { id: 7, name: 'Belajar Fundamental Aplikasi Android', level: 'Menengah', hours: 140, category: 'mobile', link: 'https://www.dicoding.com/academies/14', x: 35, y: 62 },
-  { id: 8, name: 'Belajar Pengembangan Aplikasi Android Intermediate', level: 'Mahir', hours: 150, category: 'mobile', link: 'https://www.dicoding.com/academies/352', x: 46, y: 70 },
-  { id: 9, name: 'Menjadi Android Developer Expert', level: 'Profesional', hours: 90, category: 'mobile', link: 'https://www.dicoding.com/academies/165', x: 57, y: 62 },
-  { id: 10, name: 'Belajar Dasar AI', level: 'Dasar', hours: 10, category: 'ai', link: 'https://www.dicoding.com/academies/653', x: 62, y: 50 },
-  { id: 11, name: 'Belajar Penerapan Machine Learning untuk Android', level: 'Mahir', hours: 60, category: 'ai', link: 'https://www.dicoding.com/academies/663', x: 70, y: 58 },
-  { id: 12, name: 'Belajar Dasar Google Cloud', level: 'Dasar', hours: 12, category: 'ai', link: 'https://www.dicoding.com/academies/337', x: 78, y: 48 },
-  { id: 13, name: 'Belajar Dasar Cloud dan Gen AI di AWS', level: 'Dasar', hours: 18, category: 'ai', link: 'https://www.dicoding.com/academies/251', x: 86, y: 58 },
-  { id: 14, name: 'Belajar Dasar Visualisasi Data', level: 'Dasar', hours: 16, category: 'data', link: 'https://www.dicoding.com/academies/177', x: 62, y: 38 },
-  { id: 15, name: 'Belajar Dasar Data Science', level: 'Dasar', hours: 11, category: 'data', link: 'https://www.dicoding.com/academies/615', x: 72, y: 34 },
-  { id: 16, name: 'Belajar Dasar Structured Query Language (SQL)', level: 'Dasar', hours: 11, category: 'data', link: 'https://www.dicoding.com/academies/600', x: 82, y: 40 },
-  { id: 17, name: 'Memulai Pemrograman dengan Python', level: 'Dasar', hours: 60, category: 'data', link: 'https://www.dicoding.com/academies/86', x: 75, y: 70 },
-  { id: 18, name: 'Belajar Pemrograman Prosedural dengan Python', level: 'Pemula', hours: 33, category: 'data', link: 'https://www.dicoding.com/academies/620', x: 85, y: 76 },
-  { id: 19, name: 'Pengenalan ke Logika Pemrograman', level: 'Dasar', hours: 6, category: 'foundation', link: 'https://www.dicoding.com/academies/302', x: 6, y: 52 },
-  { id: 20, name: 'Memulai Dasar Pemrograman untuk Pengembang Software', level: 'Dasar', hours: 9, category: 'foundation', link: 'https://www.dicoding.com/academies/237', x: 6, y: 68 },
-  { id: 21, name: 'Belajar Dasar Git dengan GitHub', level: 'Dasar', hours: 15, category: 'foundation', link: 'https://www.dicoding.com/academies/317', x: 92, y: 44 },
-  { id: 22, name: 'Belajar Dasar Manajemen Proyek', level: 'Dasar', hours: 11, category: 'foundation', link: 'https://www.dicoding.com/academies/570', x: 92, y: 68 },
-  { id: 23, name: 'Belajar Strategi Pengembangan Diri', level: 'Dasar', hours: 12, category: 'foundation', link: 'https://www.dicoding.com/academies/697', x: 48, y: 56 },
-]
+import { useLanguage } from '../../context/LanguageContext'
 
 const constellations = {
   frontend: { label: 'Frontend', color: '#e8c8ff', connections: [[0, 1], [1, 2], [2, 3], [3, 4], [0, 2]] },
@@ -51,6 +14,11 @@ const levelSize = { 'Dasar': 6, 'Pemula': 7, 'Menengah': 9, 'Mahir': 11, 'Profes
 const levelColor = { 'Dasar': '#c8b4ff', 'Pemula': '#e8c8ff', 'Menengah': '#f9b8d4', 'Mahir': '#ffd6a5', 'Profesional': '#b8f5b0' }
 
 export default function Certifications() {
+  const { t } = useLanguage()
+  const certData = t('certifications')
+  const achievements = certData.achievements
+  const courses = certData.courses
+
   const sectionRef = useRef(null)
   const canvasRef = useRef(null)
   const starsRef = useRef([])
@@ -58,6 +26,7 @@ export default function Certifications() {
   const [hovered, setHovered] = useState(null)
   const [hoveredAchiev, setHoveredAchiev] = useState(null)
   const [visible, setVisible] = useState(false)
+  const isVisibleRef = useRef(false)
   const [activeFilter, setActiveFilter] = useState('all')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
@@ -85,7 +54,10 @@ export default function Certifications() {
 
     // IntersectionObserver — fire as soon as even 5% is visible
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) run() },
+      ([entry]) => { 
+        isVisibleRef.current = entry.isIntersecting
+        if (entry.isIntersecting) run() 
+      },
       { threshold: 0.05 }
     )
     if (sectionRef.current) observer.observe(sectionRef.current)
@@ -123,6 +95,8 @@ export default function Certifications() {
 
     let raf
     const draw = () => {
+      raf = requestAnimationFrame(draw)
+      if (!isVisibleRef.current) return
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
       // Background twinkling stars
@@ -134,10 +108,6 @@ export default function Certifications() {
         ctx.fillStyle = `rgba(232,200,255,${a})`
         ctx.fill()
       })
-
-
-
-      raf = requestAnimationFrame(draw)
     }
     draw()
 
@@ -165,7 +135,7 @@ export default function Certifications() {
         <p style={{
           fontFamily: 'DM Sans, sans-serif', fontSize: 10, letterSpacing: '0.35em',
           textTransform: 'uppercase', color: 'rgba(232,200,255,0.8)', margin: '0 0 0.5rem',
-        }}>✦ Achievements & Certifications</p>
+        }}>{certData.eyebrow}</p>
 
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
           <h2 style={{
@@ -174,21 +144,21 @@ export default function Certifications() {
             fontWeight: 700, color: '#fff', margin: 0,
             letterSpacing: '-0.02em', lineHeight: 0.95,
           }}>
-            Constellation of
+            {certData.title}
             <span style={{
               display: 'block',
               background: 'linear-gradient(120deg, #e8c8ff 0%, #f9b8d4 50%, #c8b4ff 100%)',
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             }}>
-              Knowledge & Glory
+              {" "}{certData.titleHighlight}
             </span>
           </h2>
 
           {/* Filter buttons (Desktop) */}
           <div className="hidden lg:flex flex-wrap gap-[0.4rem] max-w-full">
             {[
-              { key: 'all', label: 'All' },
-              { key: 'achievements', label: '🏆 Awards', color: 'rgba(255,255,255,0.7)' },
+              { key: 'all', label: certData.all },
+              { key: 'achievements', label: certData.awards, color: 'rgba(255,255,255,0.7)' },
               ...Object.entries(constellations).map(([k, v]) => ({ key: k, label: v.label, color: v.color })),
             ].map(f => (
               <button
@@ -216,8 +186,8 @@ export default function Certifications() {
                 className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-white/10 bg-white/5 backdrop-blur-md transition-all active:scale-[0.98]"
               >
                 <span className="font-['DM_Sans'] text-[11px] font-medium tracking-[0.15em] uppercase text-white flex items-center gap-2">
-                  {activeFilter === 'all' && 'All Categories'}
-                  {activeFilter === 'achievements' && '🏆 Awards'}
+                  {activeFilter === 'all' && certData.allCategories}
+                  {activeFilter === 'achievements' && certData.awards}
                   {activeFilter !== 'all' && activeFilter !== 'achievements' && (
                     <>
                       <span className="w-1.5 h-1.5 rounded-full" style={{ background: constellations[activeFilter]?.color, boxShadow: `0 0 5px ${constellations[activeFilter]?.color}` }} />
@@ -236,8 +206,8 @@ export default function Certifications() {
                   }`}
               >
                 {[
-                  { key: 'all', label: 'All Categories', color: '#fff' },
-                  { key: 'achievements', label: '🏆 Awards', color: '#fff' },
+                  { key: 'all', label: certData.allCategories, color: '#fff' },
+                  { key: 'achievements', label: certData.awards, color: '#fff' },
                   ...Object.entries(constellations).map(([k, v]) => ({ key: k, label: v.label, color: v.color }))
                 ].map((opt) => (
                   <button
@@ -277,7 +247,7 @@ export default function Certifications() {
         </div>
 
         <p className="hidden lg:block" style={{ fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic', fontSize: 'clamp(12px, 1.3vw, 15px)', color: 'rgba(255,255,255,0.5)', margin: '0.5rem 0 0' }}>
-          ✦ white stars = awards · colored stars = certifications · hover to explore · click to open
+          {certData.hoverHint}
         </p>
       </div>
 
@@ -297,7 +267,7 @@ export default function Certifications() {
             .map(ach => (
               <div key={ach.id} className="p-4 rounded-xl border border-white/10 bg-white/5 backdrop-blur-md flex flex-col gap-1 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-16 h-16 bg-white/10 blur-[20px] rounded-full pointer-events-none" />
-                <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: '0 0 4px' }}>🏆 Achievement</p>
+                <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: '0 0 4px' }}>{certData.achievement}</p>
                 <h3 style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 600, color: '#fff', margin: '0 0 2px', lineHeight: 1.4 }}>{ach.name}</h3>
                 <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 11, color: 'rgba(255,255,255,0.35)', margin: 0 }}>{ach.org} · {ach.year}</p>
               </div>
@@ -391,7 +361,7 @@ export default function Certifications() {
                   borderRadius: 12, padding: '12px 16px', width: 'min(220px, calc(100vw - 2rem))',
                   backdropFilter: 'blur(16px)', pointerEvents: 'none', zIndex: 30,
                 }}>
-                  <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: '0 0 5px' }}>🏆 Achievement</p>
+                  <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: '0 0 5px' }}>{certData.achievement}</p>
                   <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 12, fontWeight: 600, color: '#fff', margin: '0 0 5px', lineHeight: 1.4 }}>{ach.name}</p>
                   <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 11, color: 'rgba(255,255,255,0.35)', margin: 0 }}>{ach.org} · {ach.year}</p>
                 </div>
@@ -463,7 +433,7 @@ export default function Certifications() {
                     }}>{course.level}</span>
                     <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 9, color: 'rgba(255,255,255,0.5)' }}>{course.hours} jam</span>
                   </div>
-                  <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 9, color: cat.color, opacity: 0.5, margin: 0, letterSpacing: '0.1em' }}>click to open course ↗</p>
+                  <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 9, color: cat.color, opacity: 0.5, margin: 0, letterSpacing: '0.1em' }}>{certData.clickOpen}</p>
                 </div>
               )}
             </div>
@@ -477,7 +447,7 @@ export default function Certifications() {
         alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem',
       }}>
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-          <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 9, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.15em', textTransform: 'uppercase', marginRight: 4 }}>Level:</span>
+          <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 9, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.15em', textTransform: 'uppercase', marginRight: 4 }}>{certData.level}</span>
           {Object.entries(levelColor).map(([level, color]) => (
             <div key={level} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <div style={{ width: levelSize[level], height: levelSize[level], borderRadius: '50%', background: color, flexShrink: 0 }} />
@@ -486,7 +456,7 @@ export default function Certifications() {
           ))}
         </div>
         <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 10, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.15em', textTransform: 'uppercase', margin: 0 }}>
-          Dicoding Indonesia · 24 Certified Courses
+          {certData.footer}
         </p>
       </div>
 

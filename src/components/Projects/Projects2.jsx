@@ -126,14 +126,20 @@ const projects = [
 // ─── THREE.JS HOOK ────────────────────────────────────────────────────────────
 const useThreeScene = (canvasRef, geometry, glow, isMobile) => {
   const rafRef = useRef()
+  const isVisibleRef = useRef(false)
 
   useEffect(() => {
     if (isMobile) return
     const canvas = canvasRef.current
     if (!canvas) return
 
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisibleRef.current = entry.isIntersecting
+    }, { threshold: 0 })
+    observer.observe(canvas)
+
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true })
-    renderer.setPixelRatio(window.devicePixelRatio)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
     renderer.setSize(canvas.clientWidth, canvas.clientHeight)
 
     const scene = new THREE.Scene()
@@ -196,6 +202,9 @@ const useThreeScene = (canvasRef, geometry, glow, isMobile) => {
 
     let t = 0
     const loop = () => {
+      rafRef.current = requestAnimationFrame(loop)
+      if (!isVisibleRef.current) return
+
       t += 0.006
       wireMesh.rotation.y = t * 0.35
       wireMesh.rotation.x = t * 0.18
@@ -204,12 +213,12 @@ const useThreeScene = (canvasRef, geometry, glow, isMobile) => {
       wireMesh.position.y = Math.sin(t * 0.7) * 0.09
       solidMesh.position.y = Math.sin(t * 0.7) * 0.09
       renderer.render(scene, camera)
-      rafRef.current = requestAnimationFrame(loop)
     }
     loop()
 
     return () => {
       cancelAnimationFrame(rafRef.current)
+      observer.disconnect()
       window.removeEventListener('resize', resize)
       renderer.dispose()
       pGeo.dispose()
@@ -447,7 +456,7 @@ const Projects = () => {
         anticipatePin: 1,
         onUpdate: (self) => {
           const progress = self.progress
-          const idx = Math.min(Math.floor(progress * total), total - 1)
+          const idx = Math.round(progress * (total - 1))
 
           if (counterRef.current) counterRef.current.innerText = `0${idx + 1}`
           if (progressFillRef.current) progressFillRef.current.style.width = `${progress * 100}%`
@@ -524,6 +533,16 @@ const Projects = () => {
             <div
               key={i}
               ref={el => dotRefs.current[i] = el}
+              onClick={() => {
+                const st = ScrollTrigger.getAll().find(t => t.trigger === wrapperRef.current)
+                if (st) {
+                  const start = st.start
+                  const end = st.end
+                  const progress = i / (projects.length - 1)
+                  const targetScroll = start + (end - start) * progress
+                  window.scrollTo({ top: targetScroll, behavior: 'smooth' })
+                }
+              }}
               className={`nav-dot ${i === 0 ? 'active' : ''}`}
             />
           ))}

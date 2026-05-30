@@ -1,660 +1,578 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import gsap from 'gsap'
-import * as THREE from 'three'
 import { useIsMobile } from '../../hooks/useIsMobile'
+import { useLanguage } from '../../context/LanguageContext'
 
-const contacts = [
-  { label: 'Email', value: 'maylafaat@gmail.com', href: 'mailto:maylafaat@gmail.com', icon: '✉', desc: 'Drop a message' },
-  { label: 'LinkedIn', value: 'maylafathinnadhifaulya', href: 'https://linkedin.com/in/maylafathinnadhifaulya', icon: '↗', desc: "Let's connect professionally" },
-  { label: 'GitHub', value: 'Maylafathin12', href: 'https://github.com/Maylafathin12', icon: '↗', desc: 'See my code' },
-  { label: 'Phone', value: '+62 882-0086-99254', href: 'tel:+6288200869254', icon: '✆', desc: 'Call or WhatsApp' },
-]
+// ── Split-flap character set ──────────────────────────────────────────────────
+const CHARS = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@./-+'
 
-const Contact = () => {
-  const sectionRef = useRef(null)
-  const canvasRef = useRef(null)
-  const titleRef = useRef(null)
-  const charsRef = useRef([])
-  const itemRefs = useRef([])
-  const cursorRef = useRef(null)
-  const cursorDotRef = useRef(null)
-  const cursorTextRef = useRef(null)
-  const [hoveredIdx, setHoveredIdx] = useState(null)
-  const [visible, setVisible] = useState(false)
-  const mousePos = useRef({ x: 0, y: 0 })
-  const cursorPos = useRef({ x: 0, y: 0 })
-  const threeRef = useRef({})
+function useSplitFlap(target, delay = 0) {
+  const [display, setDisplay] = useState(() => ' '.repeat(target.length))
+  const rafRef = useRef(null)
+  const startRef = useRef(null)
+  const DURATION = 1200
+
+  const start = useCallback(() => {
+    startRef.current = performance.now() + delay
+    const animate = (now) => {
+      if (now < startRef.current) { rafRef.current = requestAnimationFrame(animate); return }
+      const elapsed = now - startRef.current
+      const progress = Math.min(elapsed / DURATION, 1)
+      const revealed = Math.floor(progress * target.length)
+      let result = ''
+      for (let i = 0; i < target.length; i++) {
+        if (i < revealed) {
+          result += target[i]
+        } else if (i === revealed) {
+          result += CHARS[Math.floor(Math.random() * CHARS.length)]
+        } else {
+          result += ' '
+        }
+      }
+      setDisplay(result)
+      if (progress < 1) rafRef.current = requestAnimationFrame(animate)
+      else setDisplay(target)
+    }
+    rafRef.current = requestAnimationFrame(animate)
+  }, [target, delay])
+
+  useEffect(() => () => cancelAnimationFrame(rafRef.current), [])
+  return [display, start]
+}
+
+// ── Single contact row with split-flap ───────────────────────────────────────
+function ContactRow({ data, index, onReveal }) {
+  const [flapped, startFlap] = useSplitFlap(data.label, index * 180)
+  const [hovered, setHovered] = useState(false)
+  const rowRef = useRef(null)
+  const panelRef = useRef(null)
   const isMobile = useIsMobile(768)
 
-  // ── Three.js particle field ──────────────────────────────────────────────
+  useEffect(() => {
+    if (onReveal) onReveal(index, startFlap)
+  }, [])
+
+  const handleEnter = () => {
+    setHovered(true)
+    if (panelRef.current) {
+      gsap.fromTo(panelRef.current,
+        { scaleY: 0, transformOrigin: 'top center' },
+        { scaleY: 1, duration: 0.45, ease: 'expo.out' }
+      )
+    }
+  }
+
+  const handleLeave = () => {
+    setHovered(false)
+    if (panelRef.current) {
+      gsap.to(panelRef.current, { scaleY: 0, transformOrigin: 'top center', duration: 0.3, ease: 'power2.in' })
+    }
+  }
+
+  return (
+    <a
+      ref={rowRef}
+      href={data.href}
+      target={data.href.startsWith('http') ? '_blank' : undefined}
+      rel="noopener noreferrer"
+      className="signal-row"
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
+      style={{ '--row-color': data.color, '--row-accent': data.accent }}
+    >
+      {/* Row number */}
+      <span className="row-num">0{index + 1}</span>
+
+      {/* Channel badge */}
+      <span className="row-channel">{data.channel}</span>
+
+      {/* Flap display */}
+      <span className="row-flap" aria-label={data.label}>
+        {flapped.split('').map((ch, i) => (
+          <span key={i} className="flap-char" style={{ animationDelay: `${i * 0.03}s` }}>
+            {ch === ' ' ? '\u00A0' : ch}
+          </span>
+        ))}
+      </span>
+
+      {/* Status dot */}
+      <span className="row-dot" />
+
+      {/* Hover panel - drops down like a flap opening */}
+      <div ref={panelRef} className="row-panel" style={{ transform: 'scaleY(0)' }}>
+        <span className="panel-cta">{data.cta}</span>
+        <span className="panel-note">{data.note}</span>
+      </div>
+    </a>
+  )
+}
+
+// ── Ink canvas ────────────────────────────────────────────────────────────────
+function InkCanvas() {
+  const canvasRef = useRef(null)
+  const ctx = useRef(null)
+  const splats = useRef([])
+  const rafRef = useRef(null)
+  const lastPos = useRef({ x: -999, y: -999 })
+
   useEffect(() => {
     const canvas = canvasRef.current
-    if (!canvas || isMobile) return
-
-    const renderer = new THREE.WebGLRenderer({
-      canvas,
-      alpha: true,
-      antialias: false,
-      powerPreference: 'high-performance',
-    })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.setSize(canvas.clientWidth, canvas.clientHeight)
-
-    const scene = new THREE.Scene()
-    const camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 100)
-    camera.position.z = 5
-
-    const N = 900
-    const positions = new Float32Array(N * 3)
-    const colors = new Float32Array(N * 3)
-    const sizes = new Float32Array(N)
-    const speeds = new Float32Array(N)
-
-    const palette = [
-      new THREE.Color('#4a2e6e'),
-      new THREE.Color('#3d1f50'),
-      new THREE.Color('#2a1840'),
-      new THREE.Color('#6b4090'),
-      new THREE.Color('#5c3070'),
-      new THREE.Color('#6b4289'),
-      new THREE.Color('#5c3040'),
-    ]
-
-    for (let i = 0; i < N; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 22
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 14
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 6
-      const col = palette[Math.floor(Math.random() * palette.length)]
-      colors[i * 3] = col.r
-      colors[i * 3 + 1] = col.g
-      colors[i * 3 + 2] = col.b
-      sizes[i] = Math.random() * 1.2 + 0.3
-      speeds[i] = Math.random() * 0.2 + 0.05
-    }
-
-    const geo = new THREE.BufferGeometry()
-    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
-    geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
-
-    const mat = new THREE.ShaderMaterial({
-      vertexColors: true,
-      transparent: true,
-      depthWrite: false,
-      uniforms: { uTime: { value: 0 }, uMouse: { value: new THREE.Vector2(0, 0) } },
-      vertexShader: `
-        attribute float size;
-        varying vec3 vColor;
-        uniform float uTime;
-        uniform vec2 uMouse;
-        void main() {
-          vColor = color;
-          vec3 pos = position;
-          float wave = sin(pos.x * 0.3 + uTime * 0.6) * 0.25 + cos(pos.y * 0.4 + uTime * 0.4) * 0.2;
-          pos.z += wave;
-          vec4 projected = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-          vec2 ndc = projected.xy / projected.w;
-          vec2 diff = ndc - uMouse;
-          float d = length(diff);
-          if (d < 0.35) {
-            float strength = (0.35 - d) / 0.35;
-            pos.xy += normalize(diff.xy) * strength * 0.8;
-          }
-          gl_PointSize = size * (300.0 / -( modelViewMatrix * vec4(pos, 1.0)).z);
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-        }
-      `,
-      fragmentShader: `
-        varying vec3 vColor;
-        void main() {
-          float d = length(gl_PointCoord - 0.5);
-          if (d > 0.5) discard;
-          float alpha = 1.0 - smoothstep(0.15, 0.5, d);
-          gl_FragColor = vec4(vColor, alpha * 0.28);
-        }
-      `,
-    })
-
-    const points = new THREE.Points(geo, mat)
-    scene.add(points)
-
-    const gridGeo = new THREE.BufferGeometry()
-    const gridVerts = []
-    for (let x = -9; x <= 9; x += 3) { gridVerts.push(x, -6, -2, x, 6, -2) }
-    for (let y = -6; y <= 6; y += 3) { gridVerts.push(-9, y, -2, 9, y, -2) }
-    gridGeo.setAttribute('position', new THREE.Float32BufferAttribute(gridVerts, 3))
-    const gridMat = new THREE.LineBasicMaterial({ color: '#0d0818', transparent: true, opacity: 0.2 })
-    scene.add(new THREE.LineSegments(gridGeo, gridMat))
-
-    threeRef.current = { renderer, scene, camera, mat, geo, positions, speeds, N }
-
-    const resize = () => {
-      const w = canvas.clientWidth, h = canvas.clientHeight
-      renderer.setSize(w, h, false)
-      camera.aspect = w / h
-      camera.updateProjectionMatrix()
-    }
+    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight }
+    resize()
     window.addEventListener('resize', resize)
+    ctx.current = canvas.getContext('2d')
 
-    let t = 0
-    let raf
-    const loop = () => {
-      t += 0.008
-      mat.uniforms.uTime.value = t
+    const colors = ['rgba(232,200,255,', 'rgba(249,184,212,', 'rgba(191,219,254,', 'rgba(187,247,208,']
 
-      const pos = geo.attributes.position.array
-      for (let i = 0; i < N; i++) {
-        pos[i * 3 + 1] += speeds[i] * 0.0015
-        if (pos[i * 3 + 1] > 6) pos[i * 3 + 1] = -6
-      }
-      geo.attributes.position.needsUpdate = true
-
-      camera.position.x = Math.sin(t * 0.15) * 0.3
-      camera.position.y = Math.cos(t * 0.1) * 0.15
-
-      renderer.render(scene, camera)
-      raf = requestAnimationFrame(loop)
-    }
-    loop()
-
-    return () => {
-      cancelAnimationFrame(raf)
-      window.removeEventListener('resize', resize)
-      renderer.dispose()
-      geo.dispose()
-      mat.dispose()
-      gridGeo.dispose()
-      gridMat.dispose()
-    }
-  }, [isMobile])
-
-  // ── Mouse tracking for Three.js + custom cursor ──────────────────────────
-  useEffect(() => {
-    if (isMobile) return
     const onMove = (e) => {
-      mousePos.current = { x: e.clientX, y: e.clientY }
-      if (threeRef.current.mat) {
-        threeRef.current.mat.uniforms.uMouse.value.set(
-          (e.clientX / window.innerWidth) * 2 - 1,
-          -((e.clientY / window.innerHeight) * 2 - 1)
-        )
+      const mx = e.clientX, my = e.clientY
+      const dx = mx - lastPos.current.x, dy = my - lastPos.current.y
+      const speed = Math.sqrt(dx * dx + dy * dy)
+      if (speed > 8) {
+        const col = colors[Math.floor(Math.random() * colors.length)]
+        for (let k = 0; k < Math.min(3, Math.floor(speed / 12)); k++) {
+          splats.current.push({
+            x: mx + (Math.random() - 0.5) * 20,
+            y: my + (Math.random() - 0.5) * 20,
+            r: Math.random() * 18 + 6,
+            alpha: Math.random() * 0.12 + 0.04,
+            color: col,
+            life: 1,
+            decay: 0.012 + Math.random() * 0.008,
+          })
+        }
+        lastPos.current = { x: mx, y: my }
       }
     }
     window.addEventListener('mousemove', onMove)
 
-    let rafId
-    const cursorLoop = () => {
-      cursorPos.current.x += (mousePos.current.x - cursorPos.current.x) * 0.12
-      cursorPos.current.y += (mousePos.current.y - cursorPos.current.y) * 0.12
-      if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate(${cursorPos.current.x - 24}px, ${cursorPos.current.y - 24}px)`
-      }
-      if (cursorDotRef.current) {
-        cursorDotRef.current.style.transform = `translate(${mousePos.current.x - 3}px, ${mousePos.current.y - 3}px)`
-      }
-      rafId = requestAnimationFrame(cursorLoop)
+    const draw = () => {
+      rafRef.current = requestAnimationFrame(draw)
+      const c = ctx.current
+      c.clearRect(0, 0, canvas.width, canvas.height)
+      splats.current = splats.current.filter(s => s.life > 0)
+      splats.current.forEach(s => {
+        s.life -= s.decay
+        const a = s.alpha * s.life
+        const grad = c.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r)
+        grad.addColorStop(0, s.color + a + ')')
+        grad.addColorStop(0.5, s.color + (a * 0.4) + ')')
+        grad.addColorStop(1, s.color + '0)')
+        c.beginPath()
+        c.arc(s.x, s.y, s.r * (2 - s.life), 0, Math.PI * 2)
+        c.fillStyle = grad
+        c.fill()
+      })
     }
-    cursorLoop()
+    draw()
 
     return () => {
+      window.removeEventListener('resize', resize)
       window.removeEventListener('mousemove', onMove)
-      cancelAnimationFrame(rafId)
+      cancelAnimationFrame(rafRef.current)
     }
-  }, [isMobile])
+  }, [])
 
-  // ── Intersection + split-char reveal ─────────────────────────────────────
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, mixBlendMode: 'screen' }}
+    />
+  )
+}
+
+// ── Main component ─────────────────────────────────────────────────────────────
+const Contact = () => {
+  const { t } = useLanguage()
+  const contactData = t('contact')
+  const contacts = contactData.contacts
+
+  const sectionRef = useRef(null)
+  const titleRef = useRef(null)
+  const rowRevealFns = useRef({})
   const [hasRevealed, setHasRevealed] = useState(false)
+  const isMobile = useIsMobile(768)
+
+  const registerReveal = useCallback((idx, fn) => {
+    rowRevealFns.current[idx] = fn
+  }, [])
+
+  // Breathing title
+  useEffect(() => {
+    if (!titleRef.current) return
+    gsap.to(titleRef.current, {
+      y: -8,
+      duration: 3.5,
+      ease: 'sine.inOut',
+      yoyo: true,
+      repeat: -1,
+    })
+  }, [])
+
+  // Intersection observer — triggers flap animations
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
-      setVisible(entry.isIntersecting)
       if (entry.isIntersecting && !hasRevealed) {
         setHasRevealed(true)
-        charsRef.current.forEach((el, i) => {
-          if (!el) return
-          gsap.fromTo(el,
-            { opacity: 0, y: 80, rotateX: -90, filter: 'blur(8px)' },
-            { opacity: 1, y: 0, rotateX: 0, filter: 'blur(0px)', duration: 1, ease: 'expo.out', delay: 0.1 + i * 0.04 }
-          )
-        })
-        itemRefs.current.forEach((el, i) => {
-          if (!el) return
-          gsap.fromTo(el,
-            { opacity: 0, x: -40, filter: 'blur(6px)' },
-            { opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.9, ease: 'power3.out', delay: 0.9 + i * 0.12 }
-          )
+        // Stagger the row entrance then trigger flaps
+        Object.entries(rowRevealFns.current).forEach(([idx, fn]) => {
+          setTimeout(() => fn(), 400 + Number(idx) * 150)
         })
       }
-    }, { threshold: 0.15 })
+    }, { threshold: 0.2 })
     if (sectionRef.current) observer.observe(sectionRef.current)
     return () => observer.disconnect()
   }, [hasRevealed])
 
-  // ── Magnetic card effect ──────────────────────────────────────────────────
-  const handleMouseMove = useCallback((e, i) => {
-    const el = itemRefs.current[i]
-    if (!el || isMobile) return
-    const rect = el.getBoundingClientRect()
-    const cx = rect.left + rect.width / 2
-    const cy = rect.top + rect.height / 2
-    const dx = (e.clientX - cx) * 0.1
-    const dy = (e.clientY - cy) * 0.1
-    const rx = ((e.clientY - cy) / rect.height) * -14
-    const ry = ((e.clientX - cx) / rect.width) * 14
-    gsap.to(el, { x: dx, y: dy, rotateX: rx, rotateY: ry, duration: 0.4, ease: 'power2.out' })
-    const px = ((e.clientX - rect.left) / rect.width) * 100
-    const py = ((e.clientY - rect.top) / rect.height) * 100
-    el.style.setProperty('--mx', `${px}%`)
-    el.style.setProperty('--my', `${py}%`)
-  }, [isMobile])
-
-  const handleMouseLeave = useCallback((i) => {
-    gsap.to(itemRefs.current[i], { x: 0, y: 0, rotateX: 0, rotateY: 0, duration: 0.8, ease: 'elastic.out(1, 0.4)' })
-    setHoveredIdx(null)
-  }, [])
-
-  const lines = ["LET'S BUILD", 'SOMETHING', "THAT'S", 'WORTH', 'SHOWING', 'OFF']
-
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:ital,wght@1,300;1,400;1,500;1,600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&display=swap');
 
-        ${!isMobile ? 'body { cursor: none !important; }' : ''}
-
+        /* ── Section shell ── */
         .contact-section {
-          background: #07040f;
+          background: #05030c;
           min-height: 100vh;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          padding: clamp(6vh, 10vh, 12vh) clamp(4vw, 6vw, 8vw);
+          padding: clamp(8vh, 12vh, 15vh) clamp(5vw, 8vw, 10vw);
           position: relative;
           overflow: hidden;
-          perspective: 1000px;
         }
 
-        .three-canvas {
-          position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          pointer-events: none;
-          z-index: 0;
-        }
-
-        .noise-overlay {
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          z-index: 1;
-          opacity: 0.035;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-          background-size: 200px 200px;
-        }
-
-        .vignette {
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          z-index: 1;
-          background: radial-gradient(ellipse 80% 80% at 50% 50%, transparent 30%, rgba(7,4,15,0.7) 100%);
-        }
-
-        .glow-bottom {
-          position: absolute;
-          bottom: -100px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 60vw;
-          height: 300px;
-          background: radial-gradient(ellipse at 50% 100%, rgba(155,114,207,0.2) 0%, transparent 70%);
-          pointer-events: none;
-          z-index: 1;
-        }
-
-        /* ── CURSOR ── */
-        .cursor-ring {
-          position: fixed;
-          top: 0; left: 0;
-          width: 48px; height: 48px;
-          border: 1px solid rgba(232,200,255,0.6);
+        /* ── Ambient glows ── */
+        .contact-glow-1 {
+          position: absolute; pointer-events: none; z-index: 0;
+          width: 60vw; height: 60vw;
+          top: -20%; left: -15%;
           border-radius: 50%;
-          pointer-events: none;
-          z-index: 9999;
-          transition: width 0.3s, height 0.3s, border-color 0.3s, background 0.3s;
-          mix-blend-mode: difference;
+          background: radial-gradient(circle, rgba(120,40,180,0.07) 0%, transparent 70%);
+          animation: ambientDrift 14s ease-in-out infinite alternate;
         }
-        .cursor-ring.hovered {
-          width: 80px; height: 80px;
-          border-color: rgba(249,184,212,0.9);
-          background: rgba(249,184,212,0.05);
-          margin: -16px 0 0 -16px;
-        }
-        .cursor-dot {
-          position: fixed;
-          top: 0; left: 0;
-          width: 6px; height: 6px;
-          background: #f9b8d4;
+        .contact-glow-2 {
+          position: absolute; pointer-events: none; z-index: 0;
+          width: 50vw; height: 50vw;
+          bottom: -10%; right: -10%;
           border-radius: 50%;
-          pointer-events: none;
-          z-index: 9999;
+          background: radial-gradient(circle, rgba(249,100,160,0.06) 0%, transparent 70%);
+          animation: ambientDrift 18s ease-in-out infinite alternate-reverse;
         }
-        .cursor-label {
-          position: absolute;
-          top: 50%; left: 50%;
-          transform: translate(-50%, -50%);
-          font-family: 'DM Sans', sans-serif;
-          font-size: 9px;
-          letter-spacing: 0.1em;
-          color: #fff;
-          opacity: 0;
-          white-space: nowrap;
-          transition: opacity 0.3s;
-        }
-        .cursor-ring.hovered .cursor-label { opacity: 1; }
-
-        /* ── SUBTITLE ── */
-        .eyebrow {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 10px;
-          letter-spacing: 0.4em;
-          text-transform: uppercase;
-          color: rgba(232,200,255,0.8);
-          margin: 0 0 2rem;
-          display: flex;
-          align-items: center;
-          gap: 0.8rem;
-        }
-        .eyebrow::before, .eyebrow::after {
-          content: '';
-          display: block;
-          width: 24px;
-          height: 1px;
-          background: rgba(232,200,255,0.25);
+        @keyframes ambientDrift {
+          from { transform: translate(0, 0) scale(1); }
+          to   { transform: translate(3vw, 2vh) scale(1.08); }
         }
 
-        /* ── TITLE CHARS ── */
-        .title-wrap {
-          text-align: center;
-          margin-bottom: clamp(3rem, 5rem, 6rem);
-          position: relative;
-          z-index: 2;
+        /* ── Scanlines overlay ── */
+        .scanlines {
+          position: absolute; inset: 0; z-index: 1; pointer-events: none;
+          background: repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(0,0,0,0.03) 2px,
+            rgba(0,0,0,0.03) 4px
+          );
+        }
+
+        /* ── Inner container ── */
+        .contact-inner {
+          position: relative; z-index: 2;
           width: 100%;
-        }
-        .title-line {
-          display: block;
-          overflow: visible;
-          line-height: 0.88;
-        }
-        .title-char {
-          display: inline-block;
-          opacity: 0;
-          font-family: 'Clash Display', 'Arial Black', sans-serif;
-          font-size: clamp(32px, 8vw, 108px);
-          font-weight: 700;
-          letter-spacing: -0.03em;
-          transform-origin: bottom center;
-          will-change: transform, opacity;
-        }
-
-        .subtitle-italic {
-          font-family: 'Cormorant Garamond', Georgia, serif;
-          font-style: italic;
-          font-weight: 600;
-          font-size: clamp(16px, 2vw, 21px);
-          color: rgba(255,255,255,0.8);
-          margin: 1.2rem 0 0;
-          letter-spacing: 0.02em;
-          max-width: min(560px, 90vw);
-          margin-left: auto;
-          margin-right: auto;
-        }
-
-        /* ── NUMBER DECORATION ── */
-        .contact-number {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 10px;
-          color: rgba(232,200,255,0.2);
-          letter-spacing: 0.1em;
-          margin-right: auto;
-          padding-right: 1rem;
-          min-width: 28px;
-          flex-shrink: 0;
-        }
-
-        /* ── CARDS ── */
-        .contact-list {
+          max-width: min(900px, 94vw);
           display: flex;
           flex-direction: column;
-          gap: 0.9rem;
-          width: 100%;
-          max-width: min(640px, 92vw);
-          position: relative;
-          z-index: 2;
+          gap: clamp(2.5rem, 5vh, 4rem);
         }
 
-        .contact-card {
+        /* ── Header ── */
+        .contact-header {
+          display: flex;
+          flex-direction: column;
+          gap: 0.6rem;
+        }
+        .contact-eyebrow {
+          font-family: 'DM Mono', monospace;
+          font-size: clamp(9px, 0.9vw, 11px);
+          letter-spacing: 0.35em;
+          text-transform: uppercase;
+          color: rgba(232,200,255,0.5);
           display: flex;
           align-items: center;
-          padding: clamp(1rem, 1.4rem, 1.8rem) clamp(1.2rem, 1.8rem, 2rem);
-          border-radius: 18px;
-          background: rgba(255,255,255,0.018);
-          border: 1px solid rgba(232,200,255,0.07);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          text-decoration: none;
-          cursor: none;
-          opacity: 0;
-          transition: border-color 0.3s, background 0.3s;
+          gap: 1rem;
+        }
+        .contact-eyebrow::before {
+          content: '';
+          display: block; width: 32px; height: 1px;
+          background: rgba(232,200,255,0.2);
+        }
+
+        .contact-title-wrap {
+          display: block;
           will-change: transform;
-          transform-style: preserve-3d;
-          position: relative;
+        }
+        .contact-title {
+          font-family: 'Clash Display', 'Arial Black', sans-serif;
+          font-size: clamp(40px, 9vw, 130px);
+          font-weight: 700;
+          line-height: 0.88;
+          letter-spacing: -0.04em;
+          color: #fff;
+          margin: 0;
+        }
+        .contact-title .grad {
+          background: linear-gradient(130deg, #e8c8ff 0%, #f9b8d4 50%, #c084fc 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        .contact-subtitle {
+          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-style: italic;
+          font-size: clamp(14px, 1.6vw, 19px);
+          color: rgba(255,255,255,0.55);
+          margin: 1rem 0 0;
+          max-width: 480px;
+          line-height: 1.6;
+        }
+
+        /* ── Board container ── */
+        .signal-board {
+          width: 100%;
+          border: 1px solid rgba(232,200,255,0.08);
+          border-radius: 20px;
           overflow: hidden;
-          --mx: 50%;
-          --my: 50%;
+          background: rgba(255,255,255,0.015);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          position: relative;
         }
-
-        @media (hover: none) {
-          .contact-card { cursor: pointer; }
-        }
-
-        .contact-card::before {
+        .signal-board::before {
           content: '';
-          position: absolute;
-          inset: 0;
-          background: radial-gradient(circle 120px at var(--mx) var(--my), rgba(232,200,255,0.08) 0%, transparent 70%);
-          opacity: 0;
-          transition: opacity 0.3s;
-          border-radius: inherit;
-          pointer-events: none;
-        }
-        .contact-card:hover::before { opacity: 1; }
-        .contact-card:hover {
-          background: rgba(232,200,255,0.045);
-          border-color: rgba(232,200,255,0.2);
+          position: absolute; top: 0; left: 0; right: 0; height: 1px;
+          background: linear-gradient(90deg, transparent, rgba(232,200,255,0.2), rgba(249,184,212,0.2), transparent);
         }
 
-        .contact-card::after {
+        /* ── Board header row ── */
+        .board-header {
+          display: grid;
+          grid-template-columns: 40px 110px 1fr 16px;
+          gap: 0 1.5rem;
+          padding: 0.7rem clamp(1rem, 2rem, 2.5rem);
+          border-bottom: 1px solid rgba(255,255,255,0.04);
+          align-items: center;
+        }
+        .board-header span {
+          font-family: 'DM Mono', monospace;
+          font-size: 8px;
+          letter-spacing: 0.3em;
+          text-transform: uppercase;
+          color: rgba(232,200,255,0.25);
+        }
+
+        /* ── Signal row ── */
+        .signal-row {
+          display: grid;
+          grid-template-columns: 40px 110px 1fr 16px;
+          gap: 0 1.5rem;
+          padding: clamp(1rem, 1.5rem, 2rem) clamp(1rem, 2rem, 2.5rem);
+          border-bottom: 1px solid rgba(255,255,255,0.03);
+          text-decoration: none;
+          position: relative;
+          align-items: center;
+          cursor: pointer;
+          transition: background 0.3s;
+          overflow: visible;
+        }
+        .signal-row:last-child { border-bottom: none; }
+        .signal-row:hover {
+          background: rgba(255,255,255,0.025);
+        }
+        .signal-row::before {
           content: '';
-          position: absolute;
-          left: 0; top: 20%; bottom: 20%;
-          width: 2px;
-          border-radius: 2px;
-          background: linear-gradient(180deg, transparent, #e8c8ff, transparent);
+          position: absolute; left: 0; top: 15%; bottom: 15%;
+          width: 2px; border-radius: 2px;
+          background: linear-gradient(180deg, transparent, var(--row-accent), transparent);
           opacity: 0;
           transition: opacity 0.4s;
         }
-        .contact-card:hover::after { opacity: 1; }
+        .signal-row:hover::before { opacity: 1; }
 
-        .card-meta { flex: 1; min-width: 0; }
-
-        .card-label {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 9px;
-          letter-spacing: 0.28em;
-          text-transform: uppercase;
-          color: rgba(232,200,255,0.7);
-          margin: 0 0 4px;
+        /* ── Row cells ── */
+        .row-num {
+          font-family: 'DM Mono', monospace;
+          font-size: 10px;
+          color: rgba(232,200,255,0.2);
+          letter-spacing: 0.1em;
         }
 
-        .card-value {
-          font-family: 'Clash Display', 'Arial Black', sans-serif;
-          font-size: clamp(12px, 1.9vw, 20px);
-          font-weight: 600;
-          color: rgba(255,255,255,0.65);
-          margin: 0 0 2px;
-          letter-spacing: -0.01em;
+        .row-channel {
+          font-family: 'DM Mono', monospace;
+          font-size: clamp(9px, 0.9vw, 11px);
+          letter-spacing: 0.25em;
+          color: var(--row-color);
+          opacity: 0.7;
+          text-transform: uppercase;
+          transition: opacity 0.3s;
+        }
+        .signal-row:hover .row-channel { opacity: 1; }
+
+        /* ── Flap display ── */
+        .row-flap {
+          font-family: 'DM Mono', monospace;
+          font-size: clamp(13px, 1.8vw, 22px);
+          font-weight: 500;
+          letter-spacing: 0.05em;
+          color: rgba(255,255,255,0.75);
           transition: color 0.3s;
-          white-space: nowrap;
           overflow: hidden;
+          white-space: nowrap;
           text-overflow: ellipsis;
         }
-        .contact-card:hover .card-value { color: #fff; }
+        .signal-row:hover .row-flap { color: #fff; }
 
-        .card-desc {
-          font-family: 'Cormorant Garamond', serif;
-          font-style: italic;
-          font-size: 12px;
-          color: rgba(255,255,255,0.5);
-          margin: 0;
-          transition: color 0.3s;
+        .flap-char {
+          display: inline-block;
+          transition: transform 0.12s ease, opacity 0.12s;
         }
-        .contact-card:hover .card-desc { color: rgba(249,184,212,0.5); }
 
-        .card-icon {
-          font-size: 17px;
-          color: rgba(255,255,255,0.4);
-          transition: color 0.3s, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
-          margin-left: 1rem;
+        /* ── Status dot ── */
+        .row-dot {
+          width: 6px; height: 6px;
+          border-radius: 50%;
+          background: var(--row-accent);
+          opacity: 0.4;
+          transition: opacity 0.3s, transform 0.3s;
+          justify-self: end;
           flex-shrink: 0;
         }
-        .contact-card:hover .card-icon {
-          color: #f9b8d4;
-          transform: scale(1.4) rotate(-8deg);
+        .signal-row:hover .row-dot {
+          opacity: 1;
+          transform: scale(1.5);
+          box-shadow: 0 0 8px var(--row-accent);
         }
 
-        /* ── FOOTER ── */
-        .footer-text {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 10px;
-          letter-spacing: 0.2em;
+        /* ── Hover reveal panel ── */
+        .row-panel {
+          position: absolute;
+          left: 0; right: 0;
+          top: 100%;
+          z-index: 10;
+          background: rgba(10, 5, 20, 0.95);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border-bottom: 1px solid rgba(232,200,255,0.06);
+          border-left: 2px solid var(--row-accent);
+          padding: 0.85rem clamp(1rem, 2rem, 2.5rem);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1rem;
+          transform-origin: top center;
+        }
+        .panel-cta {
+          font-family: 'DM Mono', monospace;
+          font-size: clamp(10px, 1.2vw, 14px);
+          color: var(--row-color);
+          letter-spacing: 0.08em;
+        }
+        .panel-note {
+          font-family: 'Cormorant Garamond', serif;
+          font-style: italic;
+          font-size: clamp(11px, 1.1vw, 13px);
           color: rgba(255,255,255,0.4);
-          margin-top: 4rem;
-          position: relative;
-          z-index: 2;
+        }
+
+        /* ── Footer strip ── */
+        .contact-footer {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-top: 1.5rem;
+          border-top: 1px solid rgba(255,255,255,0.04);
+        }
+        .footer-sig {
+          font-family: 'DM Mono', monospace;
+          font-size: 9px;
+          letter-spacing: 0.25em;
           text-transform: uppercase;
-          text-align: center;
+          color: rgba(255,255,255,0.2);
         }
-
-        .deco-line {
-          position: relative;
-          z-index: 2;
-          width: 100%;
-          max-width: min(640px, 92vw);
-          height: 1px;
-          margin-bottom: 2.5rem;
-          background: linear-gradient(90deg, transparent, rgba(232,200,255,0.15) 30%, rgba(249,184,212,0.15) 70%, transparent);
+        .footer-blink {
+          width: 6px; height: 14px;
+          background: rgba(232,200,255,0.4);
+          border-radius: 1px;
+          animation: blink 1.1s step-end infinite;
         }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
-        /* ── Mobile tweaks ── */
-        @media (max-width: 480px) {
-          .contact-number { display: none; }
-          .card-value { font-size: clamp(11px, 3.5vw, 15px); }
-        }
-
-        @media (min-width: 1920px) {
-          .contact-section { max-width: 1400px; margin: 0 auto; }
+        /* ── Mobile ── */
+        @media (max-width: 600px) {
+          .board-header { display: none; }
+          .signal-row {
+            grid-template-columns: 32px 80px 1fr 12px;
+            gap: 0 0.8rem;
+          }
+          .row-flap { font-size: 12px; }
+          .row-channel { font-size: 8px; letter-spacing: 0.15em; }
+          .panel-note { display: none; }
+          .contact-footer { flex-direction: column; gap: 0.8rem; align-items: flex-start; }
         }
       `}</style>
 
-      {/* Custom Cursor — desktop only */}
-      {!isMobile && (
-        <>
-          <div
-            ref={cursorRef}
-            className={`cursor-ring ${hoveredIdx !== null ? 'hovered' : ''}`}
-            style={{ position: 'fixed', top: 0, left: 0, pointerEvents: 'none', zIndex: 9999 }}
-          >
-            <span ref={cursorTextRef} className="cursor-label">
-              {hoveredIdx !== null ? contacts[hoveredIdx].label.toUpperCase() : ''}
-            </span>
-          </div>
-          <div ref={cursorDotRef} className="cursor-dot" />
-        </>
-      )}
+      {/* Ink splat cursor layer */}
+      {!isMobile && <InkCanvas />}
 
       <section ref={sectionRef} className="contact-section">
-        {/* Three.js canvas */}
-        {!isMobile && <canvas ref={canvasRef} className="three-canvas" />}
+        <div className="contact-glow-1" />
+        <div className="contact-glow-2" />
+        <div className="scanlines" />
 
-        {/* Overlays */}
-        <div className="noise-overlay" />
-        <div className="vignette" />
-        <div className="glow-bottom" />
+        <div className="contact-inner">
 
-        {/* Title */}
-        <div ref={titleRef} className="title-wrap" style={{ position: 'relative', zIndex: 2 }}>
-          <p className="eyebrow">Let's Connect</p>
+          {/* ── Header ── */}
+          <div className="contact-header">
+            <p className="contact-eyebrow">{contactData.eyebrow}</p>
+            <div ref={titleRef} className="contact-title-wrap">
+              <h2 className="contact-title">
+                {contactData.title1}<br />
+                <span className="grad">{contactData.title2}</span><br />
+                {contactData.title3}
+              </h2>
+              <p className="contact-subtitle">
+                {contactData.subtitle}
+              </p>
+            </div>
+          </div>
 
-          {lines.map((line, li) => {
-            const isGradientWord = li === 1 || li === 3
-            return (
-              <span className="title-line group cursor-default" key={li}>
-                {line.split('').map((ch, ci) => {
-                  const globalIdx = lines.slice(0, li).join('').length + ci
-                  return (
-                    <span
-                      key={ci}
-                      className={`title-char ${isGradientWord ? 'bg-gradient-to-br from-[#e8c8ff] via-[#f9b8d4] to-[#c8b4ff] bg-clip-text text-transparent transition-[filter] duration-300 ease-out group-hover:saturate-[1.2]' : 'text-white'}`}
-                      ref={el => charsRef.current[globalIdx] = el}
-                      style={{ whiteSpace: ch === ' ' ? 'pre' : undefined }}
-                    >
-                      {ch}
-                    </span>
-                  )
-                })}
-              </span>
-            )
-          })}
+          {/* ── Departure board ── */}
+          <div className="signal-board">
+            <div className="board-header">
+              <span>#</span>
+              <span>{contactData.channel}</span>
+              <span>{contactData.address}</span>
+              <span />
+            </div>
+            {contacts.map((c, i) => (
+              <ContactRow
+                key={c.id}
+                data={c}
+                index={i}
+                onReveal={registerReveal}
+              />
+            ))}
+          </div>
 
-          <p className="subtitle-italic">
-            I'm open to full-time roles and selective freelance projects — particularly in product-focused teams where design and engineering work closely together.
-          </p>
+          {/* ── Footer ── */}
+          <div className="contact-footer">
+            <span className="footer-sig">
+              {contactData.footer}
+            </span>
+            <div className="footer-blink" />
+          </div>
+
         </div>
-
-        {/* Deco line */}
-        <div className="deco-line" style={{ position: 'relative', zIndex: 2 }} />
-
-        {/* Contact cards */}
-        <div className="contact-list">
-          {contacts.map((c, i) => (
-            <a
-              key={i}
-              ref={el => itemRefs.current[i] = el}
-              href={c.href}
-              target={c.href.startsWith('http') ? '_blank' : undefined}
-              rel="noopener noreferrer"
-              className="contact-card"
-              onMouseEnter={() => setHoveredIdx(i)}
-              onMouseMove={e => handleMouseMove(e, i)}
-              onMouseLeave={() => handleMouseLeave(i)}
-            >
-              <span className="contact-number">0{i + 1}</span>
-              <div className="card-meta">
-                <p className="card-label">{c.label}</p>
-                <p className="card-value">{c.value}</p>
-                <p className="card-desc">{c.desc}</p>
-              </div>
-              <span className="card-icon">{c.icon}</span>
-            </a>
-          ))}
-        </div>
-
-        {/* Footer */}
-        <p className="footer-text">
-          Designed & Built by Mayla Fathin Nadhifa Ulya · 2026
-        </p>
       </section>
     </>
   )
