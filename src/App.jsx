@@ -36,10 +36,26 @@ function App() {
   const lenisRef = useRef(null)
   const location = useLocation()
 
-  // Scroll to top on route change
+  // Scroll to top or hash on route change
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
+    if (location.hash) {
+      // Small timeout to ensure DOM is ready after route transition
+      setTimeout(() => {
+        const id = location.hash.replace('#', '');
+        const el = document.getElementById(id);
+        if (el) {
+          // If lenis is initialized, use its scrollTo, otherwise fallback to native
+          if (lenisRef.current) {
+            lenisRef.current.scrollTo(el);
+          } else {
+            el.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      }, 100);
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, [location.pathname, location.hash]);
 
   // Lenis smooth scroll
   useEffect(() => {

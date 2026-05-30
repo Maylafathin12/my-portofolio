@@ -40,7 +40,7 @@ export const projectsDataEn = [
     year: 'May 2026',
     desc: 'Pick your driver. Step into the frame. Keep the moment forever. Because F1 has 500 million fans and zero photobooths.',
     tags: ['React.js', 'Tailwind CSS', 'EmailJS', 'SaaS', 'Alpha'],
-    link: null,
+    link: 'https://mypitlane-jpg.vercel.app',
     isComingSoon: false,
     glow: '#FF8FAB',
     geometry: 'frame',

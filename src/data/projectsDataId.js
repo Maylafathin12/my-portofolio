@@ -40,7 +40,7 @@ export const projectsDataId = [
     year: '2025',
     desc: 'Pilih pembalapmu. Masuk ke dalam frame. Simpan momennya selamanya. Karena F1 memiliki 500 juta penggemar dan nol photobooth.',
     tags: ['React.js', 'Tailwind CSS', 'EmailJS', 'SaaS', 'Alpha'],
-    link: null,
+    link: 'https://mypitlane-jpg.vercel.app',
     isComingSoon: false,
     glow: '#FF8FAB',
     geometry: 'frame',

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ExternalLink, Users, Target, Rocket, AlertCircle, CheckCircle2, Map, ChevronLeft, ChevronRight, Lightbulb } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Users, Target, Rocket, AlertCircle, CheckCircle2, Map, ChevronLeft, ChevronRight, Lightbulb, GripVertical } from 'lucide-react';
 import { projectsData } from '../../data/projectsData';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -37,26 +37,45 @@ const ProjectDetail = () => {
 
   return (
     <div className="min-h-screen bg-[#07050f] text-white selection:bg-[#e8c8ff]/30 selection:text-[#e8c8ff]">
+      <style>{`
+        @keyframes shimmer-sweep {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        @keyframes pulse-ring {
+          0% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 var(--glow-color);
+            opacity: 0.8;
+          }
+          70% {
+            transform: scale(1.12);
+            box-shadow: 0 0 0 15px var(--glow-color);
+            opacity: 0;
+          }
+          100% {
+            transform: scale(1.15);
+            box-shadow: 0 0 0 0 var(--glow-color);
+            opacity: 0;
+          }
+        }
+        .view-live-draggable-btn:hover .shimmer-effect {
+          animation: shimmer-sweep 1.5s infinite;
+        }
+        .pulse-ring-effect {
+          animation: pulse-ring 2s cubic-bezier(0.25, 0, 0, 1) infinite;
+          border: 1px solid var(--glow-color);
+        }
+      `}</style>
+
       {/* ─── NAVIGATION BAR ────────────────────────────────────── */}
       <nav className="fixed top-0 left-0 w-full z-50 p-6 flex justify-between items-center pointer-events-none">
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/#projects')}
           className="pointer-events-auto flex items-center gap-2 font-['DM_Sans'] text-xs uppercase tracking-widest text-white/50 hover:text-white transition-colors bg-black/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/10"
         >
           <ArrowLeft size={14} /> Back to Works
         </button>
-
-        {project.link && !project.isComingSoon && (
-          <a
-            href={project.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="pointer-events-auto flex items-center gap-2 font-['DM_Sans'] text-xs font-semibold uppercase tracking-widest px-5 py-2.5 rounded-full text-black transition-all hover:scale-105"
-            style={{ backgroundColor: project.glow, boxShadow: `0 0 20px ${project.glow}40` }}
-          >
-            View Live <ExternalLink size={14} />
-          </a>
-        )}
       </nav>
 
       {/* ─── HERO SECTION ──────────────────────────────────────── */}
@@ -301,8 +320,8 @@ const ProjectDetail = () => {
             <h2 className="font-['Clash_Display'] text-4xl font-semibold">What They Say</h2>
           </div>
 
-          <div className="max-w-[800px] mx-auto relative z-10">
-            <div className="relative min-h-[250px] flex items-center justify-center">
+          <div className="max-w-[700px] mx-auto relative z-10">
+            <div className="relative min-h-[200px] flex items-center justify-center">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeTestimonial}
@@ -310,17 +329,17 @@ const ProjectDetail = () => {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -20, scale: 0.95 }}
                   transition={{ duration: 0.4 }}
-                  className="absolute w-full text-center px-4 md:px-12"
+                  className="absolute w-full text-center px-4 md:px-10"
                 >
-                  <div className="text-5xl md:text-6xl text-white/10 font-serif mb-4">"</div>
-                  <p className="font-['Cormorant_Garamond'] text-2xl md:text-3xl lg:text-4xl italic text-white/90 leading-relaxed mb-8">
+                  <div className="text-3xl text-white/10 font-serif mb-3">"</div>
+                  <p className="font-['Cormorant_Garamond'] text-[24px] italic text-white/85 leading-relaxed mb-6">
                     {project.testimonials[activeTestimonial].text}
                   </p>
                   <div>
-                    <h4 className="font-['DM_Sans'] text-sm font-bold text-white tracking-widest uppercase mb-1">
+                    <h4 className="font-['DM_Sans'] text-xs font-bold text-white tracking-widest uppercase mb-1">
                       {project.testimonials[activeTestimonial].name}
                     </h4>
-                    <p className="font-['DM_Sans'] text-xs text-white/40 tracking-wider uppercase">
+                    <p className="font-['DM_Sans'] text-[10px] text-white/40 tracking-wider uppercase">
                       {project.testimonials[activeTestimonial].role}
                     </p>
                   </div>
@@ -359,14 +378,14 @@ const ProjectDetail = () => {
 
       {/* ─── CLOSING LINE ──────────────────────────────────────── */}
       {project.closingLine && (
-        <section className="px-6 md:px-12 lg:px-24 max-w-[1000px] mx-auto mb-32 text-center">
+        <section className="px-6 md:px-12 lg:px-24 max-w-[800px] mx-auto mb-32 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="p-8 md:p-12 rounded-3xl border border-white/10 bg-white/[0.02]"
+            className="p-6 md:p-8 rounded-3xl border border-white/10 bg-white/[0.02]"
           >
-            <p className="font-['Cormorant_Garamond'] text-2xl md:text-3xl lg:text-4xl italic text-white/80 leading-relaxed whitespace-pre-line">
+            <p className="font-['Cormorant_Garamond'] text-[24px] italic text-white/70 leading-relaxed whitespace-pre-line">
               "{project.closingLine}"
             </p>
           </motion.div>
@@ -383,7 +402,7 @@ const ProjectDetail = () => {
         <h2 className="font-['Clash_Display'] text-3xl md:text-4xl mb-8 relative z-10">Interested in building something similar?</h2>
         <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-10">
           <Link
-            to="/"
+            to="/#projects"
             className="font-['DM_Sans'] text-xs uppercase tracking-widest px-8 py-4 rounded-full border border-white/20 hover:bg-white/5 transition-colors"
           >
             Back to Portfolio
@@ -401,6 +420,52 @@ const ProjectDetail = () => {
           )}
         </div>
       </section>
+
+      {project.link && !project.isComingSoon && (
+        <motion.div
+          drag
+          dragMomentum={false}
+          whileDrag={{ scale: 1.05, cursor: 'grabbing' }}
+          initial={{ y: 150, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: 'spring', damping: 15, stiffness: 100, delay: 0.5 }}
+          className="pointer-events-auto fixed bottom-10 z-[9999] flex items-center bg-black/60 backdrop-blur-xl border border-white/10 p-2 pr-4 rounded-full shadow-2xl cursor-grab touch-none select-none view-live-draggable"
+          style={{ 
+            left: 'calc(50% - 115px)',
+            '--glow-color': project.glow 
+          }}
+        >
+          {/* Subtle glow aura */}
+          <div 
+            className="absolute inset-0 -z-10 rounded-full blur-xl opacity-30 animate-pulse pointer-events-none"
+            style={{ backgroundColor: project.glow }}
+          />
+          
+          {/* Drag Handle vertical grip icon */}
+          <div className="text-white/40 ml-1 mr-2 flex items-center justify-center hover:text-white/60 transition-colors">
+            <GripVertical size={16} />
+          </div>
+
+          <a
+            href={project.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="pointer-events-auto relative flex items-center gap-2 font-['DM_Sans'] text-xs font-bold uppercase tracking-widest px-5 py-2.5 rounded-full text-black transition-all duration-300 hover:scale-102 group overflow-hidden view-live-draggable-btn"
+            style={{ 
+              backgroundColor: project.glow, 
+              boxShadow: `0 0 20px ${project.glow}50`,
+            }}
+          >
+            {/* Shimmer sweep effect */}
+            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full shimmer-effect" />
+            
+            {/* Pulsing ring outline */}
+            <span className="absolute inset-0 rounded-full pulse-ring-effect pointer-events-none" />
+
+            View Live <ExternalLink size={12} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </a>
+        </motion.div>
+      )}
 
     </div>
   );
