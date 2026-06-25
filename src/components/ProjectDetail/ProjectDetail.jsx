@@ -270,7 +270,7 @@ const ProjectDetail = () => {
             <div>
               <div className="flex items-center gap-3 mb-4 text-[#51cf66]">
                 <CheckCircle2 size={20} />
-                <h4 className="font-['DM_Sans'] text-lg font-medium text-white">The Solution</h4>
+                <h4 className="font-['DM_Sans'] text-lg font-medium text-white">{project.solutionTitle || "The Solution"}</h4>
               </div>
               <p className="font-['DM_Sans'] text-base md:text-lg text-white/60 leading-relaxed whitespace-pre-line bg-white/[0.01] p-6 md:p-8 rounded-2xl border border-white/5">
                 {project.solutions}
@@ -294,11 +294,34 @@ const ProjectDetail = () => {
           </div>
         </motion.div>
 
+        {/* Emotional Worlds */}
+        {project.emotionalWorlds && (
+          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16">
+            <div className="md:col-span-4 lg:col-span-3">
+              <h3 className="font-['Clash_Display'] text-2xl md:text-3xl font-semibold text-white md:sticky md:top-32">
+                {project.emotionalWorldsTitle || "Emotional Worlds"}
+              </h3>
+            </div>
+            <div className="md:col-span-8 lg:col-span-9">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {project.emotionalWorlds.map((world, idx) => (
+                  <div key={idx} className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.05] transition-colors group">
+                    <div className="text-white group-hover:text-[#e8c8ff] transition-colors font-['Clash_Display'] font-semibold text-xl mb-1">{world.name}</div>
+                    <div className="font-['DM_Sans'] text-white/50 text-sm uppercase tracking-widest">{world.emotion}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* What I Learned */}
         {project.learned && (
           <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16">
             <div className="md:col-span-4 lg:col-span-3">
-              <h3 className="font-['Clash_Display'] text-2xl md:text-3xl font-semibold text-white md:sticky md:top-32">What I Learned</h3>
+              <h3 className="font-['Clash_Display'] text-2xl md:text-3xl font-semibold text-white md:sticky md:top-32">
+                {language === 'en' ? 'What I Learned' : 'Yang Saya Pelajari'}
+              </h3>
             </div>
             <div className="md:col-span-8 lg:col-span-9">
               <div className="pl-6 md:pl-8 border-l border-white/10 relative">
@@ -371,6 +394,15 @@ const ProjectDetail = () => {
                 <ChevronRight size={18} />
               </button>
             </div>
+            
+            {/* Stats */}
+            {project.testimonialStats && (
+              <div className="flex justify-center mt-8">
+                <span className="inline-block px-4 py-1.5 rounded-full bg-white/[0.03] border border-white/10 font-['DM_Sans'] text-sm text-white/80 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                  {project.testimonialStats}
+                </span>
+              </div>
+            )}
           </div>
         </section>
       )}

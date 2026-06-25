@@ -70,6 +70,12 @@ const useThreeScene = (canvasRef, geometry, glow, isMobile) => {
       addPart(new THREE.CylinderGeometry(0.8, 0.8, 1.4, 32))
       addPart(new THREE.CylinderGeometry(0.6, 0.8, 0.3, 32), 1, [0, 0.85, 0])
       addPart(new THREE.CylinderGeometry(0.65, 0.65, 0.15, 32), 1, [0, 1.075, 0])
+    } else if (geometry === 'headphones') {
+      addPart(new THREE.TorusGeometry(0.8, 0.12, 16, 48, Math.PI), 1, [0, 0.2, 0])
+      addPart(new THREE.CylinderGeometry(0.35, 0.35, 0.25, 32), 1, [-0.85, 0.1, 0], [0, 0, Math.PI/2])
+      addPart(new THREE.CylinderGeometry(0.35, 0.35, 0.25, 32), 1, [0.85, 0.1, 0], [0, 0, Math.PI/2])
+      addPart(new THREE.CylinderGeometry(0.04, 0.04, 0.7), 1, [0.95, -0.15, 0.3], [Math.PI/2, 0, 0])
+      addPart(new THREE.SphereGeometry(0.08), 1, [0.95, -0.15, 0.65])
     } else if (geometry === 'frame') {
       addPart(new THREE.BoxGeometry(1.6, 0.2, 0.1), 1, [0, 1.0, 0])
       addPart(new THREE.BoxGeometry(1.6, 0.6, 0.1), 1, [0, -0.8, 0])
