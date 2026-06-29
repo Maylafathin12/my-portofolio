@@ -232,7 +232,7 @@ const Hero = () => {
         {/* ── RIGHT INFO ── */}
         <div ref={rightInfoRef} className="hero-right-info">
           {[
-            { label: th.coreStack, value: 'React · Next.js · Vue' },
+            { label: th.coreStack, value: 'React · Vite · TypeScript' },
             { label: th.creative3D, value: 'Three.js · GSAP · Framer-Motion' },
             { label: th.mobile, value: 'Flutter · Kotlin' },
             { label: th.designTools, value: 'Figma · UI/UX' },
@@ -420,7 +420,7 @@ const Hero = () => {
         .hero-name {
           opacity: 0;
           font-family: 'Clash Display', sans-serif;
-          font-size: clamp(32px, 6vw, 84px);
+          font-size: clamp(40px, 8vw, 90px);
           font-weight: 700;
           line-height: 0.9;
           letter-spacing: -0.03em;
@@ -586,6 +586,7 @@ const Hero = () => {
           .hero-left-info {
             order: 2;
             flex-direction: row;
+            flex-wrap: wrap;
             gap: 1.5rem;
             margin-bottom: 0;
             width: 100%;

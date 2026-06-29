@@ -138,7 +138,7 @@ export const translations = {
       softLabel: "✦ Soft Skills",
       groups: [
         { category: 'Core Web', color: '#e8c8ff', skills: ['HTML5', 'CSS3', 'JavaScript ES6+', 'TypeScript'] },
-        { category: 'Frameworks', color: '#b8f5e8', skills: ['React.js', 'Next.js', 'Vue.js', 'Tailwind CSS'] },
+        { category: 'Frameworks', color: '#b8f5e8', skills: ['React.js', 'Vite', 'TypeScript', 'Tailwind CSS'] },
         { category: 'Creative & Animation', color: '#f9b8d4', skills: ['Three.js', 'GSAP', 'Framer Motion', 'Canvas 2D'] },
         {
           category: 'Engineering Principle',
@@ -393,7 +393,7 @@ export const translations = {
       softLabel: "✦ Keahlian Interpersonal",
       groups: [
         { category: 'Inti Web', color: '#e8c8ff', skills: ['HTML5', 'CSS3', 'JavaScript ES6+', 'TypeScript'] },
-        { category: 'Framework', color: '#b8f5e8', skills: ['React.js', 'Next.js', 'Vue.js', 'Tailwind CSS'] },
+        { category: 'Framework', color: '#b8f5e8', skills: ['React.js', 'Vite', 'TypeScript', 'Tailwind CSS'] },
         { category: 'Kreatif & Animasi', color: '#f9b8d4', skills: ['Three.js', 'GSAP', 'Framer Motion', 'Canvas 2D'] },
         {
           category: 'Prinsip Rekayasa',
