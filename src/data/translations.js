@@ -137,22 +137,14 @@ export const translations = {
       touchHint: "✦ drag the tags around",
       softLabel: "✦ Soft Skills",
       groups: [
-        { category: 'Core Web', color: '#e8c8ff', skills: ['HTML5', 'CSS3', 'JavaScript ES6+', 'TypeScript'] },
-        { category: 'Frameworks', color: '#b8f5e8', skills: ['React.js', 'Vite', 'TypeScript', 'Tailwind CSS'] },
-        { category: 'Creative & Animation', color: '#f9b8d4', skills: ['Three.js', 'GSAP', 'Framer Motion', 'Canvas 2D'] },
-        {
-          category: 'Engineering Principle',
-          color: '#f9e0d9',
-          skills: [
-            'Scalable Architecture',
-            'Performance Optimization',
-            'Component-Driven Development',
-            'Clean Code'
-          ]
-        },
-        { category: 'Mobile', color: '#b8f5b0', skills: ['Kotlin', 'Dart'] },
-        { category: 'Design & Tools', color: '#c8b4ff', skills: ['Figma', 'Framer', 'UI/UX', 'Design Systems', 'Prototyping'] },
-        { category: 'Languages', color: '#ffd6a5', skills: ['Indonesian (Native)', 'English (Professional)'] },
+        { category: 'Core Frontend', color: '#e8c8ff', skills: ['React.js', 'Vite', 'TypeScript', 'JavaScript ES6+', 'HTML5', 'CSS3', 'Tailwind CSS'] },
+        { category: 'Creative & Motion', color: '#f9b8d4', skills: ['Three.js', 'GSAP', 'Framer Motion', 'Canvas 2D'] },
+        { category: 'Backend & Data', color: '#b8f5e8', skills: ['Supabase', 'SQL', 'REST API', 'Real-time Data Integration'] },
+        { category: 'Deployment', color: '#f9e0d9', skills: ['Vercel', 'Cloudflare', 'Git', 'GitHub'] },
+        { category: 'Runtime & Tools', color: '#b8f5b0', skills: ['Bun', 'Figma', 'WordPress', 'Laravel', 'PHP'] },
+        { category: 'Design', color: '#c8b4ff', skills: ['UI/UX Design', 'Design Systems', 'Responsive Design', 'Prototyping'] },
+        { category: 'QA & Engineering', color: '#ffd6a5', skills: ['Manual Testing', 'Component-Driven Development', 'Web Performance Optimization', 'SOLID Principles'] },
+        { category: 'Languages', color: '#e8c8ff', skills: ['Indonesian (Native)', 'English (Professional)', 'Malay (Professional)'] },
       ],
       soft: ['Mentoring', 'Knowledge Sharing', 'Growth Mindset', 'Problem Solving', 'Fast Learner', 'Cross-functional Collaboration', 'Creative Thinking']
     },
@@ -392,22 +384,14 @@ export const translations = {
       touchHint: "✦ seret elemen untuk berinteraksi",
       softLabel: "✦ Keahlian Interpersonal",
       groups: [
-        { category: 'Inti Web', color: '#e8c8ff', skills: ['HTML5', 'CSS3', 'JavaScript ES6+', 'TypeScript'] },
-        { category: 'Framework', color: '#b8f5e8', skills: ['React.js', 'Vite', 'TypeScript', 'Tailwind CSS'] },
+        { category: 'Frontend Inti', color: '#e8c8ff', skills: ['React.js', 'Vite', 'TypeScript', 'JavaScript ES6+', 'HTML5', 'CSS3', 'Tailwind CSS'] },
         { category: 'Kreatif & Animasi', color: '#f9b8d4', skills: ['Three.js', 'GSAP', 'Framer Motion', 'Canvas 2D'] },
-        {
-          category: 'Prinsip Rekayasa',
-          color: '#f9e0d9',
-          skills: [
-            'Arsitektur Skalabel',
-            'Optimasi Performa',
-            'Pengembangan Berbasis Komponen',
-            'Kode Bersih'
-          ]
-        },
-        { category: 'Mobile', color: '#b8f5b0', skills: ['Kotlin', 'Dart'] },
-        { category: 'Desain & Alat', color: '#c8b4ff', skills: ['Figma', 'Framer', 'UI/UX', 'Design Systems', 'Prototyping'] },
-        { category: 'Bahasa', color: '#ffd6a5', skills: ['Indonesia (Penutur Asli)', 'Inggris (Profesional)'] },
+        { category: 'Backend & Data', color: '#b8f5e8', skills: ['Supabase', 'SQL', 'REST API', 'Integrasi Data Real-time'] },
+        { category: 'Deployment', color: '#f9e0d9', skills: ['Vercel', 'Cloudflare', 'Git', 'GitHub'] },
+        { category: 'Runtime & Alat', color: '#b8f5b0', skills: ['Bun', 'Figma', 'WordPress', 'Laravel', 'PHP'] },
+        { category: 'Desain', color: '#c8b4ff', skills: ['Desain UI/UX', 'Design Systems', 'Desain Responsif', 'Prototyping'] },
+        { category: 'QA & Rekayasa', color: '#ffd6a5', skills: ['Manual Testing', 'Component-Driven Development', 'Optimasi Performa Web', 'Prinsip SOLID'] },
+        { category: 'Bahasa', color: '#e8c8ff', skills: ['Indonesia (Penutur Asli)', 'Inggris (Profesional)', 'Melayu (Profesional)'] },
       ],
       soft: ['Mentoring', 'Berbagi Pengetahuan', 'Growth Mindset', 'Pemecahan Masalah', 'Pembelajar Cepat', 'Kolaborasi Lintas Fungsi', 'Berpikir Kreatif']
     },
